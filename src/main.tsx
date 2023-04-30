@@ -1,22 +1,25 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import 'antd/dist/reset.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import "antd/dist/reset.css";
 
-import { ConfigProvider } from 'antd'
+import { GlobalProvider } from "./contexts/Global.tsx";
+import { ConfigProvider } from "antd";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#00B96B',
-          borderRadius: 20
-        }
+          colorPrimary: "#00B96B",
+          borderRadius: 10,
+        },
       }}
     >
-      <App />
+      <GlobalProvider>
+        <App />
+      </GlobalProvider>
     </ConfigProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

@@ -1,11 +1,30 @@
+import { IPatientData } from "../@types";
+
 import React, { useState } from "react";
+import { useGlobalContext } from "../contexts/Global";
+
+import { PatientForm } from "../components/forms";
+
 import { Button, message, Steps } from "antd";
 
+interface IGlobalContext {
+  patientData: IPatientData;
+}
+
 const GenerateReport: React.FC = () => {
+  // Global States
+  const { globalStates } = useGlobalContext() as {
+    globalStates: IGlobalContext;
+  };
+  const { patientData } = globalStates;
+
+  // Local states
+  const [current, setCurrent] = useState(0);
+
   const steps = [
     {
       title: "Data Diri Pasien",
-      content: "First-content",
+      content: <PatientForm />,
     },
     {
       title: "Hasil Pemeriksaan",
@@ -17,9 +36,9 @@ const GenerateReport: React.FC = () => {
     },
   ];
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
-  const [current, setCurrent] = useState(0);
 
   const next = () => {
+    console.log(patientData);
     setCurrent(current + 1);
   };
 
