@@ -1,14 +1,15 @@
-import { IPatientData } from "../@types";
+import { PatientProps, CheckUpProps, AnyObjectProps } from "../@types";
 
 import React, { useState } from "react";
 import { useGlobalContext } from "../contexts/Global";
 
-import { PatientForm } from "../components/forms";
+import { PatientForm, CheckUpForm } from "../components/forms";
 
 import { Button, message, Steps } from "antd";
 
 interface IGlobalContext {
-  patientData: IPatientData;
+  patientData: PatientProps;
+  checkUpData: CheckUpProps;
 }
 
 const GenerateReport: React.FC = () => {
@@ -16,19 +17,20 @@ const GenerateReport: React.FC = () => {
   const { globalStates } = useGlobalContext() as {
     globalStates: IGlobalContext;
   };
-  const { patientData } = globalStates;
+  const { patientData, checkUpData } = globalStates;
 
   // Local states
   const [current, setCurrent] = useState(0);
+  const [checkForm, setCheckForm] = useState(false);
 
   const steps = [
     {
       title: "Data Diri Pasien",
-      content: <PatientForm />,
+      content: <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />,
     },
     {
       title: "Hasil Pemeriksaan",
-      content: "Second-content",
+      content: <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />,
     },
     {
       title: "Buat Laporan",
@@ -37,8 +39,25 @@ const GenerateReport: React.FC = () => {
   ];
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
 
+  // Check form is filled or not
+  const checkFilled = (data: AnyObjectProps) => {
+    const isDataValid = Object.values(data).every(
+      (value) => value !== undefined && value !== "" && value !== null
+    );
+
+    if (!isDataValid) {
+      message.error("Mohon isi semua data terlebih dahulu!");
+      setCheckForm(true);
+    }
+
+    return isDataValid;
+  }
+
   const next = () => {
-    console.log(patientData);
+    // Check form data is filled or not
+    if (current === 0 && !checkFilled(patientData)) return
+    if (current === 1 && !checkFilled(checkUpData)) return
+
     setCurrent(current + 1);
   };
 

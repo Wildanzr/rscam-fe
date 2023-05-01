@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { IPatientData } from "../../@types";
+import { PatientProps } from "../../@types";
 import { DATE_FORMAT } from "../../constants";
-
+import React, { useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
 import { AutoLayout } from "../other";
-
 import { Form, Input, Select, DatePicker } from "antd";
 import debounce from "lodash.debounce";
 
@@ -13,11 +12,19 @@ const { Item } = Form;
 const { TextArea } = Input;
 
 interface IGlobalContext {
-  patientData: IPatientData;
-  setPatientData: React.Dispatch<React.SetStateAction<IPatientData>>;
+  patientData: PatientProps;
+  setPatientData: React.Dispatch<React.SetStateAction<PatientProps>>;
 }
 
-const PatientForm = () => {
+interface IPatientForm {
+  checkForm: boolean;
+  setCheckForm: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const PatientForm = (props: IPatientForm) => {
+  // Props destructuring
+  const { checkForm, setCheckForm } = props;
+
   // Global States
   const { globalStates } = useGlobalContext() as {
     globalStates: IGlobalContext;
@@ -31,6 +38,20 @@ const PatientForm = () => {
   const onFinish = (values: unknown) => {
     console.log(values);
   };
+
+  // Initially set patientData id with iso date
+  useEffect(() => {
+    setPatientData({ ...patientData, id: new Date().toISOString() });
+  }, []);
+
+  // Monitor checkForm
+  useEffect(() => {
+    if (checkForm) {
+      form.validateFields().catch(() => {
+        setCheckForm(false);
+      });
+    }
+  }, [checkForm]);
 
   return (
     <Form

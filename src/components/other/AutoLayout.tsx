@@ -9,7 +9,7 @@ const AutoLayout = (props: IAutoLayout) => {
   const { children } = props;
 
   return (
-    <div className="flex w-full flex-col lg:flex-row gap-5">
+    <div className="flex w-full flex-col lg:flex-row gap-0 space-x-0 lg:space-x-2">
       {children}
     </div>
   );
