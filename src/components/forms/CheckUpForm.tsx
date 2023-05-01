@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
 import { AutoLayout } from "../other";
-import { UploadPictures } from "./uploads";
+import { UploadPictures, UploadVideos } from "./uploads";
 import { TakePicture } from "../modals";
 import { Form, Input } from "antd";
 
@@ -111,6 +111,11 @@ const CheckUpForm = (props: ICheckUpForm) => {
           {/* Pictures */}
           <TakePicture />
           <UploadPictures />
+        </div>
+
+        <div className="flex flex-col space-y-3 w-full h-full bg-white rounded-xl p-3 border-[1px]">
+          {/* Videos */}
+          <UploadVideos />
         </div>
       </AutoLayout>
     </Form>

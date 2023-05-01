@@ -4,13 +4,15 @@ import { CheckUpProps } from "../../../@types";
 import { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
-import { Modal, Upload } from "antd";
+import { Modal, Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import axios from "axios";
+
+const { Dragger } = Upload;
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -76,8 +78,10 @@ const UploadPictures = () => {
       reader.onerror = (error) => reject(error);
     });
 
+  // Handle close preview modal
   const handleCancel = () => setPreviewOpen(false);
 
+  // Handle preview image
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as RcFile);
@@ -114,6 +118,32 @@ const UploadPictures = () => {
     setFileList(newFileList);
   };
 
+  const handleBeforeUpload = (file: File) => {
+    // Check current filelist length, if more than 6, don't upload
+    if (fileList.length >= 6) {
+      message.error("Jumlah maksimal yang dapat diunggah adalah 6 foto");
+      return Upload.LIST_IGNORE;
+    }
+
+    const isImage = file.type.includes("image");
+    if (!isImage) {
+      message.error("Anda hanya dapat mengunggah file gambar");
+    }
+
+    return isImage ? true : Upload.LIST_IGNORE;
+  };
+
+  const draggerProps: UploadProps = {
+    name: "pictures",
+    listType: "picture",
+    fileList: fileList,
+    beforeUpload: handleBeforeUpload,
+    onPreview: handlePreview,
+    onChange: handleChange,
+    customRequest: handleUpload,
+    className: "flex flex-col space-y-2 w-full h-full",
+  }
+
   // Update fileList when checkUpData.pictures changes
   useEffect(() => {
     setFileList(checkUpData.pictures || []);
@@ -123,20 +153,17 @@ const UploadPictures = () => {
   return (
     <>
       <ImgCrop quality={0.8} showReset={true}>
-        <Upload
-          customRequest={handleUpload}
-          listType="picture-card"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-        >
-          {fileList && fileList.length >= 8 ? null : (
-            <div>
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
-            </div>
-          )}
-        </Upload>
+        <Dragger {...draggerProps}>
+          <p className="ant-upload-drag-icon">
+            <PlusOutlined />
+          </p>
+          <p className="ant-upload-text">
+            Tekan atau tarik foto ke area ini untuk mengunggah
+          </p>
+          <p className="ant-upload-hint">
+            Jumlah maksimal yang dapat diunggah adalah 6 foto
+          </p>
+        </Dragger>
       </ImgCrop>
       <Modal
         open={previewOpen}

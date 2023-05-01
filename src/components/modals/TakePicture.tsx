@@ -44,7 +44,7 @@ const TakePicture: React.FC = () => {
 
     setTimeout(() => {
       setCameraVisible(true);
-    }, 500);
+    }, 300);
   };
 
   const closeModal = (): void => {
@@ -52,7 +52,7 @@ const TakePicture: React.FC = () => {
 
     setTimeout(() => {
       setVisible(false);
-    }, 500);
+    }, 300);
   };
 
   const retake = (): void => {
@@ -138,7 +138,11 @@ const TakePicture: React.FC = () => {
 
   return (
     <>
-      <Button type="primary" onClick={openModal}>
+      <Button 
+        type="primary" 
+        onClick={openModal}
+        disabled={checkUpData && checkUpData.pictures && checkUpData.pictures.length >= 6}
+      >
         Ambil Foto
       </Button>
       <Modal
@@ -179,7 +183,7 @@ const TakePicture: React.FC = () => {
               onClick={handleUploadPicture}
               disabled={capturedImage === undefined}
             >
-              Simpan Foto
+              Upload Foto
             </Button>
           </div>
         </div>

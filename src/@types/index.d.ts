@@ -19,7 +19,7 @@ export type CheckUpProps = {
     conclusion: string | undefined;
     advice: string | undefined;
     pictures: UploadFile[] | undefined;
-    videos: string[] | undefined;
+    videos: UploadFile[] | undefined;
 }
 
 export type AnyObjectProps = {
