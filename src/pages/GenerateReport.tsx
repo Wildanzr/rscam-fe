@@ -26,11 +26,15 @@ const GenerateReport: React.FC = () => {
   const steps = [
     {
       title: "Data Diri Pasien",
-      content: <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />,
+      content: (
+        <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />
+      ),
     },
     {
       title: "Hasil Pemeriksaan",
-      content: <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />,
+      content: (
+        <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />
+      ),
     },
     {
       title: "Buat Laporan",
@@ -51,14 +55,16 @@ const GenerateReport: React.FC = () => {
     }
 
     return isDataValid;
-  }
+  };
 
   const next = () => {
-    // Check form data is filled or not
-    if (current === 0 && !checkFilled(patientData)) return
-    if (current === 1 && !checkFilled(checkUpData)) return
-
-    setCurrent(current + 1);
+    setTimeout(() => {
+      // Check form data is filled or not
+      if (current === 0 && !checkFilled(patientData)) return;
+      if (current === 1 && !checkFilled(checkUpData)) return;
+      
+      setCurrent(current + 1);
+    }, 300);
   };
 
   const prev = () => {

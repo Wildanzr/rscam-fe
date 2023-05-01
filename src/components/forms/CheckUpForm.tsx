@@ -1,10 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { CheckUpProps } from "../../@types";
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
 import { AutoLayout } from "../other";
+import UploadPictures from "./uploads/UploadPictures";
 import { Form, Input } from "antd";
+
 import debounce from "lodash.debounce";
 
 const { Item } = Form;
@@ -33,6 +35,11 @@ const CheckUpForm = (props: ICheckUpForm) => {
   // useForm
   const [form] = Form.useForm();
 
+  // Initially set video data
+  useEffect(() => {
+    setCheckUpData({ ...checkUpData, videos: ['aaa'] });
+  }, []);
+
   // Monitor checkForm
   useEffect(() => {
     if (checkForm) {
@@ -45,7 +52,6 @@ const CheckUpForm = (props: ICheckUpForm) => {
     <Form
       form={form}
       initialValues={checkUpData}
-
       name="checkup-form"
       className="flex flex-col w-full h-full items-start justify-start"
     >
@@ -100,7 +106,10 @@ const CheckUpForm = (props: ICheckUpForm) => {
       </AutoLayout>
 
       <AutoLayout>
-        
+        <div className="flex w-full h-full bg-white rounded-xl p-3 border-[1px]">
+          {/* Pictures */}
+          <UploadPictures />
+        </div>
       </AutoLayout>
     </Form>
   );

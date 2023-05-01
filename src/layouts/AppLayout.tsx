@@ -80,10 +80,18 @@ const AppLayout = (props: AppLayoutProps) => {
             <p className="w-full text-2xl font-medium mb-0">Dashboard</p>
           </div>
           <div className="flex flex-col w-full h-full space-y-2 px-3 py-3">
-            <Breadcrumb>
-              <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-              <Breadcrumb.Item>Buat Laporan</Breadcrumb.Item>
-            </Breadcrumb>
+            <Breadcrumb
+              items={[
+                {
+                  key: "home",
+                  title: "Home",
+                },
+                {
+                  key: "app",
+                  title: "Application",
+                },
+              ]}
+            />
             <div className="flex flex-col w-full h-full bg-white p-5 rounded-lg">
               {children}
             </div>

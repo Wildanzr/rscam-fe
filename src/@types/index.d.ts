@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import type { UploadFile } from "antd/es/upload/interface";
 
 export type ChildrenProps = {
     children: React.ReactNode;
@@ -17,7 +18,7 @@ export type CheckUpProps = {
     result: string | undefined;
     conclusion: string | undefined;
     advice: string | undefined;
-    pictures: string[] | undefined;
+    pictures: UploadFile[] | undefined;
     videos: string[] | undefined;
 }
 

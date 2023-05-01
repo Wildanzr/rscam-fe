@@ -73,7 +73,7 @@ const PatientForm = (props: IPatientForm) => {
             className="w-full"
             onChange={debounce(
               (e) => setPatientData({ ...patientData, name: e.target.value }),
-              500
+              300
             )}
           />
         </Item>
@@ -89,7 +89,7 @@ const PatientForm = (props: IPatientForm) => {
             className="w-full"
             onChange={debounce(
               (value) => setPatientData({ ...patientData, gender: value }),
-              500
+              300
             )}
             options={[
               { value: true, label: "Laki-laki" },
@@ -109,7 +109,7 @@ const PatientForm = (props: IPatientForm) => {
             format={DATE_FORMAT}
             onChange={debounce(
               (date) => setPatientData({ ...patientData, dob: date }),
-              500
+              300
             )}
             className="w-full rounded-xl"
           />
@@ -128,7 +128,7 @@ const PatientForm = (props: IPatientForm) => {
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, address: e.target.value }),
-              500
+              300
             )}
             className="w-full"
           />
@@ -148,7 +148,7 @@ const PatientForm = (props: IPatientForm) => {
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, complaint: e.target.value }),
-              500
+              300
             )}
             className="w-full"
           />
