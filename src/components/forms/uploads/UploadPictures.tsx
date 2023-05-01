@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { CheckUpProps } from "../../../@types";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
 import { Modal, Upload } from "antd";
@@ -14,6 +15,8 @@ import axios from "axios";
 interface IGlobalContext {
   checkUpData: CheckUpProps;
   setCheckUpData: React.Dispatch<React.SetStateAction<CheckUpProps>>;
+  renderUploadedPictures: boolean;
+  setRenderUploadedPictures: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UploadPictures = () => {
@@ -21,13 +24,20 @@ const UploadPictures = () => {
   const { globalStates } = useGlobalContext() as {
     globalStates: IGlobalContext;
   };
-  const { checkUpData, setCheckUpData } = globalStates;
+  const {
+    checkUpData,
+    setCheckUpData,
+    renderUploadedPictures,
+    setRenderUploadedPictures,
+  } = globalStates;
 
   // Local states
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string>("");
   const [previewTitle, setPreviewTitle] = useState<string>("");
-  const [fileList, setFileList] = useState<UploadFile[]>(checkUpData.pictures || []);
+  const [fileList, setFileList] = useState<UploadFile[]>(
+    checkUpData.pictures || []
+  );
 
   // Handle upload file using axios
   const handleUpload = async (options: UploadRequestOption<unknown>) => {
@@ -83,27 +93,36 @@ const UploadPictures = () => {
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    // Filter successfully uploaded pictures and map to new array
+    const newPictures = newFileList
+      .filter((file) => file.status === "done")
+      .map((file, index) => {
+        return {
+          uid: `-${index}`,
+          name: `image-${index}.jpg`,
+          status: "done" as const,
+          url: file.response,
+        };
+      });
+
     // Update checkUpData
     setCheckUpData((prev) => ({
       ...prev,
-      pictures: newFileList,
+      pictures: newPictures,
     }));
 
     setFileList(newFileList);
   };
 
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+  // Update fileList when checkUpData.pictures changes
+  useEffect(() => {
+    setFileList(checkUpData.pictures || []);
+    setRenderUploadedPictures(false);
+  }, [renderUploadedPictures]);
+
   return (
     <>
-      <ImgCrop 
-        quality={0.8}
-        showReset={true}
-      >
+      <ImgCrop quality={0.8} showReset={true}>
         <Upload
           customRequest={handleUpload}
           listType="picture-card"
@@ -111,7 +130,12 @@ const UploadPictures = () => {
           onPreview={handlePreview}
           onChange={handleChange}
         >
-          {fileList.length >= 8 ? null : uploadButton}
+          {fileList && fileList.length >= 8 ? null : (
+            <div>
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </div>
+          )}
         </Upload>
       </ImgCrop>
       <Modal

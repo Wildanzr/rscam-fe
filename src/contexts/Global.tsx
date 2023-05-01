@@ -21,12 +21,17 @@ export const GlobalProvider = ({ children }: ChildrenProps) => {
     pictures: undefined,
     videos: undefined,
   });
+  const [renderUploadedPictures, setRenderUploadedPictures] = useState<boolean>(
+    false
+  );
 
   const globalStates = {
     patientData,
     setPatientData,
     checkUpData,
     setCheckUpData,
+    renderUploadedPictures,
+    setRenderUploadedPictures,
   };
 
   return (
