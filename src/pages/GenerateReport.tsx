@@ -1,11 +1,11 @@
 import { PatientProps, CheckUpProps, AnyObjectProps } from "../@types";
-
 import React, { useState } from "react";
 import { useGlobalContext } from "../contexts/Global";
 
 import { PatientForm, CheckUpForm } from "../components/forms";
-
+import { ReviewCheckUp } from "../views";
 import { Button, message, Steps } from "antd";
+import type { UploadFile } from "antd/es/upload/interface";
 
 interface IGlobalContext {
   patientData: PatientProps;
@@ -26,19 +26,15 @@ const GenerateReport: React.FC = () => {
   const steps = [
     {
       title: "Data Diri Pasien",
-      content: (
-        <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />
-      ),
+      content: <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />,
     },
     {
       title: "Hasil Pemeriksaan",
-      content: (
-        <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />
-      ),
+      content: <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />,
     },
     {
       title: "Buat Laporan",
-      content: "Last-content",
+      content: <ReviewCheckUp />,
     },
   ];
   const items = steps.map((item) => ({ key: item.title, title: item.title }));
@@ -57,11 +53,24 @@ const GenerateReport: React.FC = () => {
     return isDataValid;
   };
 
+  // Check pictures or videos is undefined or length is 0
+  const checkMedia = (data: UploadFile[]) => {
+    return data === undefined || data.length === 0;
+  };
+
   const next = () => {
     setTimeout(() => {
       // Check form data is filled or not
       if (current === 0 && !checkFilled(patientData)) return;
-      if (current === 1 && !checkFilled(checkUpData)) return;
+      if (current === 1 && !checkFilled(checkUpData)) {
+        if (checkMedia(checkUpData.pictures as UploadFile[])) {
+          message.error("Mohon upload minimal 1 gambar!");
+        }
+        if (checkMedia(checkUpData.videos as UploadFile[])) {
+          message.error("Mohon upload minimal 1 video!");
+        }
+        return;
+      }
       
       setCurrent(current + 1);
     }, 300);

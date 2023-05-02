@@ -36,11 +36,6 @@ const CheckUpForm = (props: ICheckUpForm) => {
   // useForm
   const [form] = Form.useForm();
 
-  // Initially set video data
-  useEffect(() => {
-    setCheckUpData({ ...checkUpData, videos: [] });
-  }, []);
-
   // Monitor checkForm
   useEffect(() => {
     if (checkForm) {

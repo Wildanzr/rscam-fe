@@ -4,7 +4,8 @@ import { CheckUpProps } from "../../../@types";
 import { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
-import { Modal, Upload, message } from "antd";
+import { PreviewImage } from "../../modals";
+import { Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
 import { PlusOutlined } from "@ant-design/icons";
 import type { RcFile, UploadProps } from "antd/es/upload";
@@ -165,15 +166,14 @@ const UploadPictures = () => {
           </p>
         </Dragger>
       </ImgCrop>
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
+      <PreviewImage 
+        previewOpen={previewOpen}
+        previewTitle={previewTitle}
+        handleCancel={handleCancel}
+        previewImage={previewImage}
         footer={null}
-        onCancel={handleCancel}
         width={500}
-      >
-        <img alt="example" style={{ width: "100%" }} src={previewImage} />
-      </Modal>
+      />
     </>
   );
 };

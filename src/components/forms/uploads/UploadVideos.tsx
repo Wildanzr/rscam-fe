@@ -3,7 +3,8 @@ import { CheckUpProps } from "../../../@types";
 import React, { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
-import { UploadFile, Upload, Modal, message } from "antd";
+import { PreviewVideo } from "../../modals";
+import { UploadFile, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { RcFile } from "antd/es/upload";
@@ -159,20 +160,14 @@ const UploadVideos: React.FC = () => {
         </p>
       </Dragger>
 
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
+      <PreviewVideo
+        previewOpen={previewOpen}
+        previewTitle={previewTitle}
+        handleCancel={closePreview}
+        previewVideo={previewVideo}
         footer={null}
-        onCancel={closePreview}
         width={500}
-      >
-        <video
-          src={previewVideo}
-          controls
-          className="w-full"
-          id="video-preview"
-        />
-      </Modal>
+      />
     </>
   );
 };
