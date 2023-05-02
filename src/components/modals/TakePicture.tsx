@@ -157,9 +157,10 @@ const TakePicture: React.FC = () => {
             {cameraVisible && (
               <Webcam
                 audio={false}
-                mirrored={true}
+                mirrored={false}
                 screenshotFormat="image/jpeg"
                 screenshotQuality={1}
+                imageSmoothing={true}
                 videoConstraints={videoConstraints}
                 ref={webcamRef}
                 className="flex w-full"

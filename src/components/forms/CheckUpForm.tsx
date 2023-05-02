@@ -5,7 +5,7 @@ import { useGlobalContext } from "../../contexts/Global";
 
 import { AutoLayout } from "../other";
 import { UploadPictures, UploadVideos } from "./uploads";
-import { TakePicture } from "../modals";
+import { TakePicture, TakeVideo } from "../modals";
 import { Form, Input } from "antd";
 
 import debounce from "lodash.debounce";
@@ -38,7 +38,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
 
   // Initially set video data
   useEffect(() => {
-    setCheckUpData({ ...checkUpData, videos: ["aaa"] });
+    setCheckUpData({ ...checkUpData, videos: [] });
   }, []);
 
   // Monitor checkForm
@@ -54,7 +54,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
       form={form}
       initialValues={checkUpData}
       name="checkup-form"
-      className="flex flex-col w-full h-full items-start justify-start"
+      className="flex flex-col space-y-2 w-full h-full items-start justify-start"
     >
       {/* Result */}
       <Item
@@ -115,6 +115,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
 
         <div className="flex flex-col space-y-3 w-full h-full bg-white rounded-xl p-3 border-[1px]">
           {/* Videos */}
+          <TakeVideo />
           <UploadVideos />
         </div>
       </AutoLayout>

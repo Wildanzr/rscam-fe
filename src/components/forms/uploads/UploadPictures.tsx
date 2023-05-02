@@ -141,7 +141,7 @@ const UploadPictures = () => {
     onPreview: handlePreview,
     onChange: handleChange,
     customRequest: handleUpload,
-    className: "flex flex-col space-y-2 w-full h-full",
+    className: "flex flex-col space-y-2 w-full",
   }
 
   // Update fileList when checkUpData.pictures changes

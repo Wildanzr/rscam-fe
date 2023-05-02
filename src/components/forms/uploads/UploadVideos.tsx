@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { CheckUpProps } from "../../../@types";
 import React, { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
-import { UploadFile, Upload, Button, message } from "antd";
+import { UploadFile, Upload, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { RcFile } from "antd/es/upload";
@@ -107,12 +108,18 @@ const UploadVideos: React.FC = () => {
     beforeUpload: handleBeforeUpload,
     onChange: handleChange,
     customRequest: handleUpload,
-    className: "flex flex-col space-y-2 w-full h-full",
+    className: "flex flex-col space-y-2 w-full",
   };
+
+  // Update fileList when checkUpData.video changes
+  useEffect(() => {
+    setFileList(checkUpData.videos || []);
+    setRenderUploadedVideos(false);
+  }, [renderUploadedVideos]);
 
   return (
     <>
-      <Dragger {...draggerProps} className="flex flex-col space-y-2 w-full h-full">
+      <Dragger {...draggerProps}>
         <p className="ant-upload-drag-icon">
           <PlusOutlined />
         </p>
@@ -120,7 +127,7 @@ const UploadVideos: React.FC = () => {
           Tekan atau tarik video ke area ini untuk mengunggah
         </p>
         <p className="ant-upload-hint">
-          Jumlah maksimal yang dapat diunggah adalah 3 video
+          Jumlah maksimal yang dapat diunggah adalah 6 video
         </p>
       </Dragger>
     </>
