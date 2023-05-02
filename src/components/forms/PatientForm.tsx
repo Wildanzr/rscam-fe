@@ -123,8 +123,11 @@ const PatientForm = (props: IPatientForm) => {
           rules={[{ required: true, message: "Mohon isikan alamat pasien" }]}
           className="w-full"
         >
-          <Input
+          <TextArea
             placeholder="Alamat Pasien"
+            autoSize={{ minRows: 1, maxRows: 3 }}
+            showCount
+            maxLength={1000}
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, address: e.target.value }),
@@ -145,6 +148,8 @@ const PatientForm = (props: IPatientForm) => {
           <TextArea
             placeholder="Keluhan Pasien"
             autoSize={{ minRows: 4, maxRows: 8 }}
+            showCount
+            maxLength={1000}
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, complaint: e.target.value }),

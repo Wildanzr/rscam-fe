@@ -64,6 +64,8 @@ const CheckUpForm = (props: ICheckUpForm) => {
       >
         <TextArea
           placeholder="Hasil pemeriksaan"
+          showCount
+          maxLength={1000}
           autoSize={{ minRows: 3, maxRows: 5 }}
           onChange={debounce((e) => {
             setCheckUpData({ ...checkUpData, result: e.target.value });
@@ -82,6 +84,8 @@ const CheckUpForm = (props: ICheckUpForm) => {
           <TextArea
             placeholder="Kesimpulan"
             autoSize={{ minRows: 3, maxRows: 5 }}
+            showCount
+            maxLength={500}
             onChange={debounce((e) => {
               setCheckUpData({ ...checkUpData, conclusion: e.target.value });
             }, 500)}
@@ -98,6 +102,8 @@ const CheckUpForm = (props: ICheckUpForm) => {
           <TextArea
             placeholder="Saran"
             autoSize={{ minRows: 3, maxRows: 5 }}
+            showCount
+            maxLength={500}
             onChange={debounce((e) => {
               setCheckUpData({ ...checkUpData, advice: e.target.value });
             }, 500)}
@@ -107,13 +113,13 @@ const CheckUpForm = (props: ICheckUpForm) => {
       </AutoLayout>
 
       <AutoLayout>
-        <div className="flex flex-col space-y-3 w-full h-full bg-white rounded-xl p-3 border-[1px]">
+        <div className="flex flex-col space-y-2 w-full h-full bg-white rounded-xl p-3 border-[1px] my-2">
           {/* Pictures */}
           <TakePicture />
           <UploadPictures />
         </div>
 
-        <div className="flex flex-col space-y-3 w-full h-full bg-white rounded-xl p-3 border-[1px]">
+        <div className="flex flex-col space-y-2 w-full h-full bg-white rounded-xl p-3 border-[1px] my-2">
           {/* Videos */}
           <TakeVideo />
           <UploadVideos />

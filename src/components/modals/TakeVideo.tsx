@@ -1,9 +1,9 @@
 import { CheckUpProps } from "../../@types";
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
 import { Button, Modal } from "antd";
-import { useRecordWebcam } from "react-record-webcam";
+import Webcam from "react-webcam";
 import axios from "axios";
 
 interface IGlobalContext {
@@ -21,98 +21,135 @@ const TakeVideo: React.FC = () => {
 
   // Local states
   const [visible, setVisible] = useState<boolean>(false);
-  const [recordState, setRecordState] = useState<string>("idle");
-  const [recordedVideo, setRecordedVideo] = useState<boolean>(false);
+  const [videoVisible, setVideoVisible] = useState<boolean>(true);
+  const [captureState, setCaptureState] = useState<string>("idle");
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
 
-  //   Webcam constraints
-  const recordWebcam = useRecordWebcam({
-    frameRate: 60,
+  // Refs
+  const webcamRef = useRef<Webcam>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  const videoConstraints = {
     width: 1280,
     height: 720,
-    mimeType: "video/mp4"
-  });
-
-  const uploadVideo = async () => {
-    const blob = (await recordWebcam.getRecording()) as Blob;
-    const file = new File([blob], "video.mp4", { type: blob.type });
-
-    const fmData = new FormData();
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-        "mime-type": "video/mp4",
-      },
-    };
-    fmData.append("files", file);
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5000/upload",
-        fmData,
-        config
-      );
-
-      //   Result
-      console.log(data);
-
-      closeModal();
-    } catch (err) {
-      console.log("Eroor: ", err);
-    }
+    facingMode: "user",
   };
 
   const openModal = (): void => {
     setVisible(true);
-    setRecordedVideo(false);
-    setRecordState("idle");
+    setCaptureState("idle");
+    setRecordedChunks([]);
 
     setTimeout(() => {
-      recordWebcam.open();
+      setVideoVisible(true);
     }, 300);
   };
 
   const closeModal = (): void => {
-    recordWebcam.close();
-    setRecordedVideo(false);
-    setRecordState("idle");
+    setVideoVisible(false);
+    setCaptureState("idle");
+    setRecordedChunks([]);
 
     setTimeout(() => {
       setVisible(false);
     }, 300);
   };
 
-  const handleButtonRecord = () => {
-    const startRecording = () => {
-      setRecordedVideo(false);
-      setRecordState("recording");
+  const handleDataAvailable = useCallback(
+    ({ data }: { data: Blob }) => {
+      if (data.size > 0) {
+        setRecordedChunks((prev) => prev.concat(data));
+      }
+    },
+    [setRecordedChunks]
+  );
 
-      setTimeout(() => {
-        recordWebcam.start();
-      }, 300);
-    };
+  const handleStartCaptureClick = useCallback(() => {
+    setCaptureState("recording");
+    if (webcamRef.current !== null) {
+      mediaRecorderRef.current = new MediaRecorder(
+        webcamRef.current.stream as MediaStream,
+        {
+          mimeType: "video/webm",
+        }
+      );
+      mediaRecorderRef.current.addEventListener(
+        "dataavailable",
+        handleDataAvailable
+      );
+      mediaRecorderRef.current.start();
+    }
+  }, [webcamRef, mediaRecorderRef, handleDataAvailable]);
 
-    const stopRecording = () => {
-      setRecordedVideo(true);
-      setRecordState("stopped");
+  const handleStopCaptureClick = useCallback(() => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+    }
 
-      setTimeout(() => {
-        recordWebcam.stop();
-      }, 300);
-    };
+    setCaptureState("stopped");
+    setVideoVisible(false);
+  }, [mediaRecorderRef]);
 
-    const retake = () => {
-      setRecordedVideo(false);
-      setRecordState("idle");
+  const handleUpload = useCallback(async () => {
+    if (recordedChunks.length) {
+      const blob = new Blob(recordedChunks, {
+        type: "video/webm",
+      });
 
-      setTimeout(() => {
-        recordWebcam.retake();
-      }, 300);
-    };
-    if (recordState === "idle") {
-      startRecording();
-    } else if (recordState === "recording") {
-      stopRecording();
-    } else if (recordState === "stopped") {
-      retake();
+      const file = new File([blob], "video.webm", { type: blob.type });
+
+      const fmData = new FormData();
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      };
+      fmData.append("files", file);
+      try {
+        const { data } = await axios.post(
+          "http://localhost:5000/upload",
+          fmData,
+          config
+        );
+
+        //   Result
+        const url = data.data.url;
+        const length = checkUpData?.videos?.length || 0;
+        const newVideos = {
+          uid: `${length}`,
+          name: `video-${length}.webm`,
+          status: "done" as const,
+          url: url,
+        };
+
+        setCheckUpData({
+          ...checkUpData,
+          videos: checkUpData.videos
+            ? [...checkUpData.videos, newVideos]
+            : [newVideos],
+        });
+
+        setRenderUploadedVideos((prev) => !prev);
+        setRecordedChunks([]);
+        closeModal();
+      } catch (err) {
+        console.log("Eroor: ", err);
+      }
+    }
+  }, [checkUpData, recordedChunks, setCheckUpData, setRenderUploadedVideos]);
+
+  const handleRetake = useCallback(() => {
+    setRecordedChunks([]);
+    setCaptureState("idle");
+  }, [setRecordedChunks]);
+
+  const handleButtonRecord = (): void => {
+    if (captureState === "idle") {
+      handleStartCaptureClick();
+    } else if (captureState === "recording") {
+      handleStopCaptureClick();
+    } else if (captureState === "stopped") {
+      handleRetake();
     }
   };
 
@@ -123,40 +160,60 @@ const TakeVideo: React.FC = () => {
       </Button>
       <Modal
         title="Ambil Video"
-        centered
         open={visible}
-        footer={null}
+        centered
         onCancel={closeModal}
+        footer={null}
       >
-        <div className="flex flex-col w-full space-y-2">
-          <video ref={recordWebcam.webcamRef} autoPlay hidden={recordedVideo} />
-          <video
-            ref={recordWebcam.previewRef}
-            autoPlay
-            loop
-            controls
-            hidden={!recordedVideo}
-          />
+        <div className="flex flex-col space-y-4 w-full h-full items-center justify-center">
+          <div className="flex w-full">
+            {videoVisible && (
+              <Webcam
+                height={videoConstraints.height}
+                width={videoConstraints.width}
+                audio={true}
+                mirrored={true}
+                videoConstraints={videoConstraints}
+                ref={webcamRef}
+                hidden={captureState === "stopped"}
+                className="flex w-full"
+              />
+            )}
+
+            {/* Show recorded video */}
+            {recordedChunks.length > 0 && (
+              <video controls autoPlay loop className="flex w-full" hidden={captureState !== "stopped"}>
+                <source
+                  src={URL.createObjectURL(
+                    new Blob(recordedChunks, { type: "video/webm" })
+                  )}
+                  type="video/webm"
+                />
+              </video>
+            )}
+          </div>
 
           <div className="flex flex-row w-full space-x-3 items-center justify-center">
-            <Button type="primary" onClick={handleButtonRecord}>
-              {recordState === "idle"
+            <Button
+              type="primary"
+              danger={captureState === "recording"}
+              onClick={handleButtonRecord}
+            >
+              {captureState === "idle"
                 ? "Mulai Rekam"
-                : recordState === "recording"
+                : captureState === "recording"
                 ? "Berhenti Rekam"
                 : "Ambil Ulang"}
             </Button>
 
-            <Button type="primary" onClick={uploadVideo}>
+            <Button
+              type="primary"
+              onClick={handleUpload}
+              disabled={recordedChunks.length === 0}
+            >
               Upload Video
             </Button>
           </div>
-
-          {/* <button onClick={recordWebcam.start}>Start recording</button>
-          <button onClick={stopRecording}>Stop recording</button>
-          <button onClick={recordWebcam.retake}>Retake recording</button>
-          <button onClick={recordWebcam.download}>Download recording</button>
-          <button onClick={saveFile}>Save file to server</button> */}
         </div>
       </Modal>
     </>

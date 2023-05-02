@@ -3,7 +3,7 @@ import { CheckUpProps } from "../../../@types";
 import React, { useState, useEffect } from "react";
 import { useGlobalContext } from "../../../contexts/Global";
 
-import { UploadFile, Upload, message } from "antd";
+import { UploadFile, Upload, Modal, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { RcFile } from "antd/es/upload";
@@ -32,6 +32,9 @@ const UploadVideos: React.FC = () => {
   } = globalStates;
 
   // Local states
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+  const [previewVideo, setPreviewVideo] = useState<string>("");
+  const [previewTitle, setPreviewTitle] = useState<string>("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   // Handle upload file using axios
@@ -79,6 +82,17 @@ const UploadVideos: React.FC = () => {
     return isImage ? true : Upload.LIST_IGNORE;
   };
 
+  // Handle preview video
+  const handlePreview = async (file: UploadFile) => {
+    setPreviewVideo(file.url || (file.preview as string));
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name ||
+        file.url?.substring(file.url?.lastIndexOf("/") + 1) ||
+        "video.webm"
+    );
+  };
+
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     // Filter successfully uploaded pictures and map to new array
     const newVideos = newFileList
@@ -106,9 +120,23 @@ const UploadVideos: React.FC = () => {
     listType: "picture",
     fileList: fileList,
     beforeUpload: handleBeforeUpload,
+    onPreview: handlePreview,
     onChange: handleChange,
     customRequest: handleUpload,
     className: "flex flex-col space-y-2 w-full",
+  };
+
+  // close modal
+  const closePreview = (): void => {
+    setPreviewOpen(false);
+
+    setTimeout(() => {
+      const video = document.getElementById(
+        "video-preview"
+      ) as HTMLVideoElement;
+      video.pause();
+      video.currentTime = 0;
+    }, 300);
   };
 
   // Update fileList when checkUpData.video changes
@@ -130,6 +158,21 @@ const UploadVideos: React.FC = () => {
           Jumlah maksimal yang dapat diunggah adalah 6 video
         </p>
       </Dragger>
+
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={closePreview}
+        width={500}
+      >
+        <video
+          src={previewVideo}
+          controls
+          className="w-full"
+          id="video-preview"
+        />
+      </Modal>
     </>
   );
 };
