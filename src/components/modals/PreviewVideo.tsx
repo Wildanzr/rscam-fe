@@ -25,6 +25,7 @@ const PreviewVideo = ({
         open={previewOpen}
         title={previewTitle}
         onCancel={handleCancel}
+        centered
         footer={footer}
         width={width}
       >

@@ -68,8 +68,9 @@ const PatientForm = (props: IPatientForm) => {
           rules={[{ required: true, message: "Mohon isikan nama pasien" }]}
           className="w-full"
         >
-          <Input
+          <TextArea
             placeholder="Nama Pasien"
+            autoSize={{ minRows: 1, maxRows: 1 }}
             className="w-full"
             onChange={debounce(
               (e) => setPatientData({ ...patientData, name: e.target.value }),

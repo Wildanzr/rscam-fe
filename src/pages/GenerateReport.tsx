@@ -1,11 +1,14 @@
 import { PatientProps, CheckUpProps, AnyObjectProps } from "../@types";
+import type { UploadFile } from "antd/es/upload/interface";
+import type { ItemType } from "antd/es/breadcrumb/Breadcrumb";
 import React, { useState } from "react";
 import { useGlobalContext } from "../contexts/Global";
 
-import { PatientForm, CheckUpForm } from "../components/forms";
+import { AppLayout } from "../layouts";
 import { ReviewCheckUp } from "../views";
+import { PatientForm, CheckUpForm } from "../components/forms";
 import { Button, message, Steps } from "antd";
-import type { UploadFile } from "antd/es/upload/interface";
+import { useNavigate } from "react-router-dom";
 
 interface IGlobalContext {
   patientData: PatientProps;
@@ -19,25 +22,49 @@ const GenerateReport: React.FC = () => {
   };
   const { patientData, checkUpData } = globalStates;
 
+  // React Router Navigate
+  const navigate = useNavigate();
+
   // Local states
   const [current, setCurrent] = useState(0);
   const [checkForm, setCheckForm] = useState(false);
 
+  // Breadcrumb items
+  const breadcrumbItems: ItemType[] = [
+    {
+      title: "Dashboard",
+      onClick: () => navigate("/"),
+    },
+    {
+      title: "Pemeriksaan",
+      onClick: () => navigate("/"),
+      className: "cursor-pointer"
+    }
+  ]
+
+
   const steps = [
     {
       title: "Data Diri Pasien",
-      content: <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />,
+      content: (
+        <PatientForm checkForm={checkForm} setCheckForm={setCheckForm} />
+      ),
     },
     {
       title: "Hasil Pemeriksaan",
-      content: <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />,
+      content: (
+        <CheckUpForm checkForm={checkForm} setCheckForm={setCheckForm} />
+      ),
     },
     {
       title: "Buat Laporan",
       content: <ReviewCheckUp />,
     },
   ];
-  const items = steps.map((item) => ({ key: item.title, title: item.title }));
+  const stepItems = steps.map((item) => ({
+    key: item.title,
+    title: item.title,
+  }));
 
   // Check form is filled or not
   const checkFilled = (data: AnyObjectProps) => {
@@ -71,7 +98,7 @@ const GenerateReport: React.FC = () => {
         }
         return;
       }
-      
+
       setCurrent(current + 1);
     }, 300);
   };
@@ -81,39 +108,41 @@ const GenerateReport: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-3 w-full h-full justify-between">
-      {/* Step title */}
-      <div className="flex w-full items-center justify-center">
-        <Steps current={current} items={items} />
-      </div>
+    <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
+      <div className="flex flex-col space-y-3 w-full h-full justify-between">
+        {/* Step title */}
+        <div className="flex w-full items-center justify-center">
+          <Steps current={current} items={stepItems} />
+        </div>
 
-      {/* Step content */}
-      <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
-        {steps[current].content}
-      </div>
+        {/* Step content */}
+        <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
+          {steps[current].content}
+        </div>
 
-      {/* Step navigation */}
-      <div className="flex w-full items-center justify-end">
-        {current > 0 && (
-          <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
-            Sebelumnya
-          </Button>
-        )}
-        {current === steps.length - 1 && (
-          <Button
-            type="primary"
-            onClick={() => message.success("Processing complete!")}
-          >
-            Selesai
-          </Button>
-        )}
-        {current < steps.length - 1 && (
-          <Button type="primary" onClick={() => next()}>
-            Selanjutnya
-          </Button>
-        )}
+        {/* Step navigation */}
+        <div className="flex w-full items-center justify-end">
+          {current > 0 && (
+            <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+              Sebelumnya
+            </Button>
+          )}
+          {current === steps.length - 1 && (
+            <Button
+              type="primary"
+              onClick={() => message.success("Processing complete!")}
+            >
+              Selesai
+            </Button>
+          )}
+          {current < steps.length - 1 && (
+            <Button type="primary" onClick={() => next()}>
+              Selanjutnya
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

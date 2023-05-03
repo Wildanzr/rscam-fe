@@ -6,20 +6,23 @@ import "antd/dist/reset.css";
 
 import { GlobalProvider } from "./contexts/Global.tsx";
 import { ConfigProvider } from "antd";
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#00B96B",
-          borderRadius: 10,
-        },
-      }}
-    >
-      <GlobalProvider>
-        <App />
-      </GlobalProvider>
-    </ConfigProvider>
+    <BrowserRouter>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#00B96B",
+            borderRadius: 10,
+          },
+        }}
+      >
+        <GlobalProvider>
+          <App />
+        </GlobalProvider>
+      </ConfigProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

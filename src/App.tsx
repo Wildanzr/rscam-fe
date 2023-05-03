@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
-import { AppLayout } from "./layouts";
-import { GenerateReport } from "./pages"
+import AppRoutes from "./routes";
 
 const App = () => {
   // Priority tailwindcss over antd
@@ -17,11 +16,7 @@ const App = () => {
     );
   }, []);
 
-  return (
-    <AppLayout>
-      <GenerateReport />
-    </AppLayout>
-  );
+  return <AppRoutes />;
 };
 
 export default App;
