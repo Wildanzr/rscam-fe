@@ -1,7 +1,7 @@
 import React from "react";
 
 import { SideLayout } from "../layouts";
-import { GenerateReport } from "../pages";
+import { GenerateReport, NotFound } from "../pages";
 import { Routes, Route } from "react-router-dom";
 
 const AppRoutes: React.FC = () => {
@@ -9,7 +9,7 @@ const AppRoutes: React.FC = () => {
     <SideLayout>
       <Routes>
         <Route path="/" element={<GenerateReport />} />
-        <Route path="*" element={<h1>Not Found</h1>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </SideLayout>
   );
