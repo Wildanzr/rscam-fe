@@ -25,3 +25,10 @@ export type CheckUpProps = {
 export type AnyObjectProps = {
     [key: string]: unknown;
 }
+
+export type VideoConstaintsProps = {
+    width: number;
+    height: number;
+    facingMode: string;
+    deviceId?: string;
+}

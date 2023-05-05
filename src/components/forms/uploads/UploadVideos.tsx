@@ -12,6 +12,7 @@ import type { UploadRequestOption } from "rc-upload/lib/interface";
 import axios from "axios";
 
 const { Dragger } = Upload;
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -55,11 +56,11 @@ const UploadVideos: React.FC = () => {
     fmData.append("files", file);
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/upload",
+        `${API_HOST}/checkup/upload`,
         fmData,
         config
       );
-      const url = data.data.url;
+      const url = data.path;
       onSuccess(url);
     } catch (err) {
       console.log("Eroor: ", err);

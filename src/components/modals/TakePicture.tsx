@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { CheckUpProps } from "../../@types";
-import React, { useState, useRef, useCallback } from "react";
+import { CheckUpProps, VideoConstaintsProps } from "../../@types";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
-import { Button, Modal } from "antd";
+import { Button, Modal, Select } from "antd";
 import Webcam from "react-webcam";
 import axios from "axios";
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -27,16 +28,16 @@ const TakePicture: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | undefined>(
     undefined
   );
+  const [videoConstraints, setVideoConstraints] =
+    useState<VideoConstaintsProps>({
+      width: 1280,
+      height: 720,
+      facingMode: "environment",
+    });
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   // Refs
   const webcamRef = useRef<Webcam>(null);
-
-  // Webcam constraints
-  const videoConstraints = {
-    width: 700,
-    height: 700,
-    facingMode: "user",
-  };
 
   const openModal = (): void => {
     setVisible(true);
@@ -106,13 +107,13 @@ const TakePicture: React.FC = () => {
     fmData.append("files", file);
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/upload",
+        `${API_HOST}/checkup/upload`,
         fmData,
         config
       );
 
       //   Result
-      const url = data.data.url;
+      const url = data.path;
       const length = checkUpData?.pictures?.length || 0;
       const newPictures = {
         uid: `${length}`,
@@ -136,12 +137,37 @@ const TakePicture: React.FC = () => {
     }
   };
 
+  const handleDevices = useCallback((MediaDevices: MediaDeviceInfo[]) => {
+    setDevices(MediaDevices);
+    setVideoConstraints({
+      width: 1280,
+      height: 720,
+      facingMode: "environment",
+      deviceId: MediaDevices[0].deviceId,
+    });
+  }, []);
+
+  // Detect devices
+  useEffect(() => {
+    // only get devices with camera
+    navigator.mediaDevices.enumerateDevices().then((MediaDevices) => {
+      const videoDevices = MediaDevices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      handleDevices(videoDevices);
+    });
+  }, [handleDevices]);
+
   return (
     <>
-      <Button 
-        type="primary" 
+      <Button
+        type="primary"
         onClick={openModal}
-        disabled={checkUpData && checkUpData.pictures && checkUpData.pictures.length >= 6}
+        disabled={
+          checkUpData &&
+          checkUpData.pictures &&
+          checkUpData.pictures.length >= 6
+        }
       >
         Ambil Foto
       </Button>
@@ -153,18 +179,39 @@ const TakePicture: React.FC = () => {
         onCancel={closeModal}
       >
         <div className="flex flex-col space-y-4 w-full h-full items-center justify-center">
-          <div className="flex w-full">
+          <div className="flex flex-col space-y-2 w-full">
             {cameraVisible && (
-              <Webcam
-                audio={false}
-                mirrored={false}
-                screenshotFormat="image/jpeg"
-                screenshotQuality={1}
-                imageSmoothing={true}
-                videoConstraints={videoConstraints}
-                ref={webcamRef}
-                className="flex w-full"
-              />
+              <>
+                <Webcam
+                  audio={false}
+                  mirrored={false}
+                  screenshotFormat="image/jpeg"
+                  screenshotQuality={1}
+                  imageSmoothing={true}
+                  videoConstraints={videoConstraints}
+                  ref={webcamRef}
+                  className="flex w-full"
+                />
+                <Select
+                  className="flex w-full"
+                  defaultValue={devices[0].label}
+                  options={
+                    devices.map((device, idx) => ({
+                      label: device.label,
+                      value: idx,
+                    })) || []
+                  }
+                  onChange={(value) => {
+                    const selectedDevice = devices[value as unknown as number];
+                    setVideoConstraints({
+                      width: 1280,
+                      height: 720,
+                      facingMode: "environment",
+                      deviceId: selectedDevice.deviceId,
+                    });
+                  }}
+                />
+              </>
             )}
           </div>
 

@@ -1,11 +1,11 @@
-import { CheckUpProps } from "../../@types";
-import React, { useState, useRef, useCallback } from "react";
+import { CheckUpProps, VideoConstaintsProps } from "../../@types";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
-import { Button, Modal } from "antd";
+import { Button, Modal, Select } from "antd";
 import Webcam from "react-webcam";
 import axios from "axios";
-
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 interface IGlobalContext {
   checkUpData: CheckUpProps;
   setCheckUpData: React.Dispatch<React.SetStateAction<CheckUpProps>>;
@@ -24,16 +24,16 @@ const TakeVideo: React.FC = () => {
   const [videoVisible, setVideoVisible] = useState<boolean>(true);
   const [captureState, setCaptureState] = useState<string>("idle");
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+  const [videoConstraints, setVideoConstraints] = useState<VideoConstaintsProps>({
+    width: 1280,
+    height: 720,
+    facingMode: "environment",
+  });
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   // Refs
   const webcamRef = useRef<Webcam>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-
-  const videoConstraints = {
-    width: 1280,
-    height: 720,
-    facingMode: "user",
-  };
 
   const openModal = (): void => {
     setVisible(true);
@@ -107,13 +107,13 @@ const TakeVideo: React.FC = () => {
       fmData.append("files", file);
       try {
         const { data } = await axios.post(
-          "http://localhost:5000/upload",
+          `${API_HOST}/checkup/upload`,
           fmData,
           config
         );
 
         //   Result
-        const url = data.data.url;
+        const url = data.path;
         const length = checkUpData?.videos?.length || 0;
         const newVideos = {
           uid: `${length}`,
@@ -141,6 +141,7 @@ const TakeVideo: React.FC = () => {
   const handleRetake = useCallback(() => {
     setRecordedChunks([]);
     setCaptureState("idle");
+    setVideoVisible(true);
   }, [setRecordedChunks]);
 
   const handleButtonRecord = (): void => {
@@ -152,6 +153,29 @@ const TakeVideo: React.FC = () => {
       handleRetake();
     }
   };
+
+  const handleDevices = useCallback((MediaDevices: MediaDeviceInfo[]) => {
+    setDevices(MediaDevices);
+    setVideoConstraints({
+      width: 1280,
+      height: 720,
+      facingMode: "environment",
+      deviceId: MediaDevices[0].deviceId,
+    });
+  }, []);
+
+  // Detect devices
+  useEffect(() => {
+    // only get devices with camera
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then((MediaDevices) => {
+        const videoDevices = MediaDevices.filter(
+          (device) => device.kind === "videoinput"
+        );
+        handleDevices(videoDevices);
+      })
+  }, [handleDevices]);
 
   return (
     <>
@@ -166,23 +190,50 @@ const TakeVideo: React.FC = () => {
         footer={null}
       >
         <div className="flex flex-col space-y-4 w-full h-full items-center justify-center">
-          <div className="flex w-full">
+          <div className="flex flex-col space-y-2 w-full">
             {videoVisible && (
-              <Webcam
-                height={videoConstraints.height}
-                width={videoConstraints.width}
-                audio={true}
-                mirrored={true}
-                videoConstraints={videoConstraints}
-                ref={webcamRef}
-                hidden={captureState === "stopped"}
-                className="flex w-full"
-              />
+              <>
+                <Webcam
+                  height={videoConstraints.height}
+                  width={videoConstraints.width}
+                  audio={true}
+                  mirrored={false}
+                  videoConstraints={videoConstraints}
+                  ref={webcamRef}
+                  hidden={captureState === "stopped"}
+                  className="flex w-full"
+                />
+                <Select
+                  className="flex w-full"
+                  defaultValue={devices[0].label}
+                  options={
+                    devices.map((device, idx) => ({
+                      label: device.label,
+                      value: idx,
+                    })) || []
+                  }
+                  onChange={(value) => {
+                    const selectedDevice = devices[value as unknown as number];
+                    setVideoConstraints({
+                      width: 1280,
+                      height: 720,
+                      facingMode: "environment",
+                      deviceId: selectedDevice.deviceId,
+                    });
+                  }}
+                />
+              </>
             )}
 
             {/* Show recorded video */}
             {recordedChunks.length > 0 && (
-              <video controls autoPlay loop className="flex w-full" hidden={captureState !== "stopped"}>
+              <video
+                controls
+                autoPlay
+                loop
+                className="flex w-full"
+                hidden={captureState !== "stopped"}
+              >
                 <source
                   src={URL.createObjectURL(
                     new Blob(recordedChunks, { type: "video/webm" })
