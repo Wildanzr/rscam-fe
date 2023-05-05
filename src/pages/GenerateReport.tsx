@@ -1,7 +1,7 @@
 import { PatientProps, CheckUpProps, AnyObjectProps } from "../@types";
 import type { UploadFile } from "antd/es/upload/interface";
 import type { ItemType } from "antd/es/breadcrumb/Breadcrumb";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useGlobalContext } from "../contexts/Global";
 
 import { AppLayout } from "../layouts";
@@ -9,11 +9,14 @@ import { ReviewCheckUp } from "../views";
 import { PatientForm, CheckUpForm } from "../components/forms";
 import { Button, message, Steps } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface IGlobalContext {
   patientData: PatientProps;
   checkUpData: CheckUpProps;
 }
+
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 const GenerateReport: React.FC = () => {
   // Global States
@@ -35,11 +38,6 @@ const GenerateReport: React.FC = () => {
       title: "Dashboard",
       onClick: () => navigate("/"),
     },
-    {
-      title: "Pemeriksaan",
-      onClick: () => navigate("/"),
-      className: "cursor-pointer"
-    }
   ]
 
 
@@ -107,6 +105,22 @@ const GenerateReport: React.FC = () => {
     setCurrent(current - 1);
   };
 
+  const handleCreateReport = useCallback(async () => {
+    try {
+      const payload = {
+        ...patientData,
+        ...checkUpData,
+      }
+
+      const { data } = await axios.post(`${API_HOST}/checkup`, payload);
+      message.success("Laporan berhasil dibuat!");
+      navigate(`/checkup/${data.id}`);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }, [checkUpData, navigate, patientData])
+
   return (
     <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
       <div className="flex flex-col space-y-3 w-full h-full justify-between">
@@ -130,7 +144,7 @@ const GenerateReport: React.FC = () => {
           {current === steps.length - 1 && (
             <Button
               type="primary"
-              onClick={() => message.success("Processing complete!")}
+              onClick={handleCreateReport}
             >
               Selesai
             </Button>

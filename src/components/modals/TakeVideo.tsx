@@ -205,7 +205,7 @@ const TakeVideo: React.FC = () => {
                 />
                 <Select
                   className="flex w-full"
-                  defaultValue={devices[0].label}
+                  defaultValue={devices[0]?.label || ""}
                   options={
                     devices.map((device, idx) => ({
                       label: device.label,

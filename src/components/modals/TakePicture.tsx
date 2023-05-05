@@ -6,6 +6,7 @@ import { useGlobalContext } from "../../contexts/Global";
 import { Button, Modal, Select } from "antd";
 import Webcam from "react-webcam";
 import axios from "axios";
+
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 interface IGlobalContext {
@@ -194,7 +195,7 @@ const TakePicture: React.FC = () => {
                 />
                 <Select
                   className="flex w-full"
-                  defaultValue={devices[0].label}
+                  defaultValue={devices[0]?.label || ""}
                   options={
                     devices.map((device, idx) => ({
                       label: device.label,
