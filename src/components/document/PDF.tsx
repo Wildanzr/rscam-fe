@@ -1,14 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
-import {
-  Document,
-  Page,
-  PDFViewer,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import { Document, Page, PDFViewer, StyleSheet } from "@react-pdf/renderer";
 
-import Header from "./Header";
-import Border from "./Border";
+import { Header, Border, Persona } from ".";
 
 import Chanel from "./assets/chanel.png";
 
@@ -18,6 +12,7 @@ const PDF: React.FC = () => {
     page: {
       flexDirection: "column",
       backgroundColor: "#FFFFFF",
+      padding: 10
     },
   });
 
@@ -41,8 +36,16 @@ const PDF: React.FC = () => {
               cp="081 XXX XXX XXX"
               email="admin@roses.id"
             />
-
             <Border />
+            <Persona
+              name="Muhammad Sodikin"
+              age={40}
+              gender={true}
+              address="Jl. Ahmad Yani No. 10, Kel. Cemp. Putih Barat, Kec. Cemp. Putih, Kota Jkt. Pusat, Prov. DKI Jakarta, Kode Pos 10510"
+              doctor="dr. Gunazar Gesang, Sp.PK., M.Kes"
+              date="Senin, 4 Desember 2022"
+              time="13:30:45 WIB"
+            />
           </Page>
         </Document>
       </PDFViewer>

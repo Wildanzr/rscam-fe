@@ -38,9 +38,8 @@ const Header: React.FC<IHeader> = ({
   const styles = StyleSheet.create({
     h_page: {
       flexDirection: "row",
-      backgroundColor: "#FFFFFF",
       width: "100%",
-      height: "10%",
+      height: "8%",
     },
     header: {
       width: "100%",
@@ -62,7 +61,7 @@ const Header: React.FC<IHeader> = ({
     },
     h_detail: {
       fontFamily: "opensans",
-      fontSize: 12,
+      fontSize: 9,
       fontWeight: 400,
     },
   });
