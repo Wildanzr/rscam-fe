@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
-import { Header, Border, Persona, Checkup, Footer } from ".";
+import { Header, Border, Persona, Checkup, Footer, Signature } from ".";
 
 import Chanel from "./assets/chanel.png";
 
@@ -34,10 +34,9 @@ const PDF: React.FC = () => {
       height: "15%",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "flex-end",
+      alignItems: "stretch",
+      justifyContent: "space-between",
       gap: 5,
-      backgroundColor: 'red'
     },
     body: {
       width: "100%",
@@ -87,6 +86,7 @@ const PDF: React.FC = () => {
             </View>
 
             <View style={styles.footer}>
+              <Signature />
               <Footer />
             </View>
           </Page>

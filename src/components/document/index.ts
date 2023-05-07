@@ -7,3 +7,4 @@ export { default as Description } from './Description';
 export { default as Result } from './Result';
 export { default as Checkup } from './Checkup';
 export { default as Footer } from './Footer';
+export { default as Signature } from './Signature';

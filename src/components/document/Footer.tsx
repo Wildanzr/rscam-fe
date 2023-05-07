@@ -1,10 +1,9 @@
 import React from "react";
 
 import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
-import dayjs from "dayjs";
 import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
 import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
-
+import dayjs from "dayjs";
 import "dayjs/locale/id"
 
 dayjs.locale("id");
@@ -32,7 +31,6 @@ const Footer: React.FC = () => {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      margin: "10 0 0 0",
     },
     footer_text: {
       width: "100%",
@@ -40,7 +38,6 @@ const Footer: React.FC = () => {
       fontFamily: "opensans",
       fontSize: 7,
       fontWeight: 400,
-      padding: 5,
     },
   });
   return (
