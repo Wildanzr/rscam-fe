@@ -5,7 +5,14 @@ import { View, StyleSheet, Font } from "@react-pdf/renderer";
 import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
 import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
 
-const Checkup: React.FC = () => {
+interface ICheckup {
+  complaint: string;
+  result: string;
+  conclusion: string;
+  advice: string;
+}
+
+const Checkup: React.FC<ICheckup> = ({ complaint, result, conclusion, advice}: ICheckup) => {
   // Register font
   Font.register({
     family: "opensans",
@@ -45,23 +52,23 @@ const Checkup: React.FC = () => {
         <Result
           color="#00B96B"
           title="Keluhan Pasien"
-          text="Pasien mengalami sakit kepala selama beberapa hari terakhir, disertai dengan mual, muntah, penurunan nafsu makan, dan rasa lelah. Keluhan tersebut mengganggu aktivitas sehari-hari dan tidak mereda meski sudah istirahat."
+          text={complaint}
         />
         <Result
           color="#00B96B"
           title="Hasil Pemeriksaan"
-          text="Pasien didiagnosis menderita migrain vestibular dengan peningkatan tekanan darah. Diberikan resep obat untuk mengatasi sakit kepala dan menurunkan tekanan darah, serta instruksi untuk menjaga pola makan dan tidur yang teratur."
+          text={result}
         />
         <View style={styles.conclusion_container}>
           <Result
             color="#1677FF"
             title="Kesimpulan Dokter"
-            text="Pasien mengalami sakit kepala selama beberapa hari terakhir, disertai dengan mual, muntah, penurunan nafsu makan, dan rasa lelah. Keluhan tersebut mengganggu aktivitas sehari-hari dan tidak mereda meski sudah istirahat."
+            text={conclusion}
           />
           <Result
             color="#1677FF"
             title="Saran Dokter"
-            text="Pasien didiagnosis menderita migrain vestibular dengan peningkatan tekanan darah. Diberikan resep obat untuk mengatasi sakit kepala dan menurunkan tekanan darah, serta instruksi untuk menjaga pola makan dan tidur yang teratur."
+            text={advice}
           />
         </View>
       </View>

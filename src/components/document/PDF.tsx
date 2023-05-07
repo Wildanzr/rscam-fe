@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { ReportProps } from "../../@types";
 import React from "react";
 import {
   Document,
@@ -11,8 +12,26 @@ import {
 import { Header, Border, Persona, Checkup, Footer, Signature } from ".";
 
 import Chanel from "./assets/chanel.png";
+import dayjs from "dayjs";
+import "dayjs/locale/id"
 
-const PDF: React.FC = () => {
+dayjs.locale("id");
+
+const PDF: React.FC<ReportProps> = ({
+  address,
+  advice,
+  complaint,
+  conclusion,
+  dob,
+  gender,
+  id,
+  name,
+  pictures,
+  result,
+  videos,
+  _id,
+  _rev
+}: ReportProps) => {
   // Create styles
   const styles = StyleSheet.create({
     page: {
@@ -48,12 +67,19 @@ const PDF: React.FC = () => {
     },
   });
 
+  const checkupProps = {
+    complaint,
+    result,
+    conclusion,
+    advice,
+  }
+
   return (
     <>
       <PDFViewer style={{ width: "100%", height: "100%" }}>
         <Document
-          title="Laporan A"
-          subject="Laporan A"
+          title={`Laporan Pemeriksaan - ${name}`}
+          subject={`Laporan Pemeriksaan - ${name}`}
           author="Dokter A"
           language="id"
           creator="Dokter A"
@@ -74,15 +100,15 @@ const PDF: React.FC = () => {
 
             <View style={styles.body}>
               <Persona
-                name="Muhammad Sodikin"
-                age={40}
-                gender={true}
-                address="Jl. Ahmad Yani No. 10, Kel. Cemp. Putih Barat, Kec. Cemp. Putih, Kota Jkt. Pusat, Prov. DKI Jakarta, Kode Pos 10510"
+                name={name}
+                age={dayjs().diff(dob, 'year')}
+                gender={gender}
+                address={address}
                 doctor="dr. Gunazar Gesang, Sp.PK., M.Kes"
-                date="Senin, 4 Desember 2022"
-                time="13:30:45 WIB"
+                date={dayjs(id).format('dddd, DD MMMM YYYY')}
+                time={dayjs(id).format('HH:mm:ss [WIB]')}
               />
-              <Checkup />
+              <Checkup {...checkupProps} />
             </View>
 
             <View style={styles.footer}>

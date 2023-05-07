@@ -55,11 +55,13 @@ const ViewReport: React.FC = () => {
   return (
     <AppLayout title={`Laporan ${checkupId}`} breadcrumb={breadcrumbItems}>
       <div className="flex w-full h-full items-start justify-center">
-        {reportData === undefined
-          ? <Spin size="default" tip="Loading..." />
-          : reportData === null
-          ? <NotFound />
-          : <PDF />}
+        {reportData === undefined ? (
+          <Spin size="default" tip="Loading..." />
+        ) : reportData === null ? (
+          <NotFound />
+        ) : (
+          <PDF {...reportData} />
+        )}
       </div>
     </AppLayout>
   );

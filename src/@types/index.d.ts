@@ -34,15 +34,17 @@ export type VideoConstaintsProps = {
 }
 
 export type ReportProps = {
-    id: string | undefined;
-    name: string | undefined;
-    gender: boolean | undefined;
-    dob: string | undefined;
-    address: string | undefined;
-    complaint: string | undefined;
-    result: string | undefined;
-    conclusion: string | undefined;
-    advice: string | undefined;
-    pictures: string[] | undefined;
-    videos: string[] | undefined;
+    _id: string;
+    _rev: string;
+    id: string;
+    name: string;
+    gender: boolean;
+    dob: string;
+    address: string;
+    complaint: string;
+    result: string;
+    conclusion: string;
+    advice: string;
+    pictures: string[];
+    videos: string[];
 }
