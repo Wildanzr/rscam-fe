@@ -32,3 +32,17 @@ export type VideoConstaintsProps = {
     facingMode: string;
     deviceId?: string;
 }
+
+export type ReportProps = {
+    id: string | undefined;
+    name: string | undefined;
+    gender: boolean | undefined;
+    dob: string | undefined;
+    address: string | undefined;
+    complaint: string | undefined;
+    result: string | undefined;
+    conclusion: string | undefined;
+    advice: string | undefined;
+    pictures: string[] | undefined;
+    videos: string[] | undefined;
+}

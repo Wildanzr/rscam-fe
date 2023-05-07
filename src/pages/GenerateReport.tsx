@@ -14,6 +14,8 @@ import axios from "axios";
 interface IGlobalContext {
   patientData: PatientProps;
   checkUpData: CheckUpProps;
+  setPatientData: React.Dispatch<React.SetStateAction<PatientProps>>;
+  setCheckUpData: React.Dispatch<React.SetStateAction<CheckUpProps>>;
 }
 
 const API_HOST = import.meta.env.VITE_API_HOST as string;
@@ -23,7 +25,7 @@ const GenerateReport: React.FC = () => {
   const { globalStates } = useGlobalContext() as {
     globalStates: IGlobalContext;
   };
-  const { patientData, checkUpData } = globalStates;
+  const { patientData, checkUpData, setCheckUpData, setPatientData } = globalStates;
 
   // React Router Navigate
   const navigate = useNavigate();
@@ -106,20 +108,29 @@ const GenerateReport: React.FC = () => {
   };
 
   const handleCreateReport = useCallback(async () => {
+    const videos = checkUpData.videos?.map(video => video.url)
+    const pictures = checkUpData.pictures?.map(picture => picture.url)
     try {
       const payload = {
         ...patientData,
         ...checkUpData,
+        videos,
+        pictures
       }
 
       const { data } = await axios.post(`${API_HOST}/checkup`, payload);
       message.success("Laporan berhasil dibuat!");
+
+      // Reset global states
+      setPatientData({} as PatientProps);
+      setCheckUpData({} as CheckUpProps);
+
       navigate(`/checkup/${data.id}`);
 
     } catch (error) {
       console.log(error);
     }
-  }, [checkUpData, navigate, patientData])
+  }, [checkUpData, navigate, patientData, setCheckUpData, setPatientData])
 
   return (
     <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
