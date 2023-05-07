@@ -28,7 +28,7 @@ const Checkup: React.FC = () => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      margin: "10 0 0 0",
+      margin: "5 0 0 0",
     },
     conclusion_container: {
       width: "100%",

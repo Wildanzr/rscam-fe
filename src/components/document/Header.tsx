@@ -39,7 +39,7 @@ const Header: React.FC<IHeader> = ({
     h_page: {
       flexDirection: "row",
       width: "100%",
-      height: "8%",
+      height: "100%",
     },
     header: {
       width: "100%",
