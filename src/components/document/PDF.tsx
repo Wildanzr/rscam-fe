@@ -1,6 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ReportProps } from "../../@types";
 import React from "react";
+import { useGlobalContext } from "../../contexts/Global";
+
+import { Header, Border, Persona, Checkup, Footer, Signature, Attachment } from ".";
 import {
   Document,
   Page,
@@ -8,14 +11,15 @@ import {
   PDFViewer,
   StyleSheet,
 } from "@react-pdf/renderer";
-
-import { Header, Border, Persona, Checkup, Footer, Signature } from ".";
-
 import Chanel from "./assets/chanel.png";
 import dayjs from "dayjs";
-import "dayjs/locale/id"
+import "dayjs/locale/id";
 
 dayjs.locale("id");
+
+interface IGlobalContext {
+  qrCode: string | undefined | null;
+}
 
 const PDF: React.FC<ReportProps> = ({
   address,
@@ -28,10 +32,12 @@ const PDF: React.FC<ReportProps> = ({
   name,
   pictures,
   result,
-  videos,
-  _id,
-  _rev
+  videos
 }: ReportProps) => {
+  // Global states
+  const { globalStates } = useGlobalContext() as { globalStates: IGlobalContext };
+  const { qrCode } = globalStates;
+
   // Create styles
   const styles = StyleSheet.create({
     page: {
@@ -65,6 +71,15 @@ const PDF: React.FC<ReportProps> = ({
       alignItems: "flex-start",
       justifyContent: "flex-start",
     },
+    result: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 5,
+    },
   });
 
   const checkupProps = {
@@ -72,8 +87,13 @@ const PDF: React.FC<ReportProps> = ({
     result,
     conclusion,
     advice,
-  }
+  };
 
+  const attachmentProps = {
+    pictures,
+    videos,
+    qrCode,
+  }
   return (
     <>
       <PDFViewer style={{ width: "100%", height: "100%" }}>
@@ -101,14 +121,17 @@ const PDF: React.FC<ReportProps> = ({
             <View style={styles.body}>
               <Persona
                 name={name}
-                age={dayjs().diff(dob, 'year')}
+                age={dayjs().diff(dob, "year")}
                 gender={gender}
                 address={address}
                 doctor="dr. Gunazar Gesang, Sp.PK., M.Kes"
-                date={dayjs(id).format('dddd, DD MMMM YYYY')}
-                time={dayjs(id).format('HH:mm:ss [WIB]')}
+                date={dayjs(id).format("dddd, DD MMMM YYYY")}
+                time={dayjs(id).format("HH:mm:ss [WIB]")}
               />
-              <Checkup {...checkupProps} />
+              <View style={styles.result}>
+                <Checkup {...checkupProps} />
+                <Attachment {...attachmentProps} />
+              </View>
             </View>
 
             <View style={styles.footer}>

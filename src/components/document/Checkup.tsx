@@ -30,21 +30,13 @@ const Checkup: React.FC<ICheckup> = ({ complaint, result, conclusion, advice}: I
 
   const styles = StyleSheet.create({
     checkup_container: {
-      width: "100%",
+      width: "50%",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       margin: "5 0 0 0",
-    },
-    conclusion_container: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 10,
-    },
+    }
   });
   return (
     <>
@@ -59,7 +51,6 @@ const Checkup: React.FC<ICheckup> = ({ complaint, result, conclusion, advice}: I
           title="Hasil Pemeriksaan"
           text={result}
         />
-        <View style={styles.conclusion_container}>
           <Result
             color="#1677FF"
             title="Kesimpulan Dokter"
@@ -70,7 +61,6 @@ const Checkup: React.FC<ICheckup> = ({ complaint, result, conclusion, advice}: I
             title="Saran Dokter"
             text={advice}
           />
-        </View>
       </View>
     </>
   );

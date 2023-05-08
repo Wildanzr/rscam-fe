@@ -27,6 +27,7 @@ export const GlobalProvider = ({ children }: ChildrenProps) => {
   const [renderUploadedVideos, setRenderUploadedVideos] = useState<boolean>(
     false
   );
+  const [qrCode, setQRCode] = useState<string | undefined | null>(undefined);
 
   const globalStates = {
     patientData,
@@ -37,6 +38,8 @@ export const GlobalProvider = ({ children }: ChildrenProps) => {
     setRenderUploadedPictures,
     renderUploadedVideos,
     setRenderUploadedVideos,
+    qrCode,
+    setQRCode,
   };
 
   return (
