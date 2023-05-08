@@ -25,7 +25,8 @@ const GenerateReport: React.FC = () => {
   const { globalStates } = useGlobalContext() as {
     globalStates: IGlobalContext;
   };
-  const { patientData, checkUpData, setCheckUpData, setPatientData } = globalStates;
+  const { patientData, checkUpData, setCheckUpData, setPatientData } =
+    globalStates;
 
   // React Router Navigate
   const navigate = useNavigate();
@@ -40,8 +41,7 @@ const GenerateReport: React.FC = () => {
       title: "Dashboard",
       onClick: () => navigate("/"),
     },
-  ]
-
+  ];
 
   const steps = [
     {
@@ -108,66 +108,75 @@ const GenerateReport: React.FC = () => {
   };
 
   const handleCreateReport = useCallback(async () => {
-    const videos = checkUpData.videos?.map(video => video.url)
-    const pictures = checkUpData.pictures?.map(picture => picture.url)
+    const videos = checkUpData.videos?.map((video) => video.url);
+    const pictures = checkUpData.pictures?.map((picture) => picture.url);
     try {
       const payload = {
         ...patientData,
         ...checkUpData,
         videos,
-        pictures
-      }
+        pictures,
+      };
 
       const { data } = await axios.post(`${API_HOST}/checkup`, payload);
       message.success("Laporan berhasil dibuat!");
 
       // Reset global states
-      setPatientData({} as PatientProps);
-      setCheckUpData({} as CheckUpProps);
+      setPatientData({
+        address: undefined,
+        complaint: undefined,
+        dob: undefined,
+        gender: undefined,
+        name: undefined,
+        id: undefined,
+      });
+      setCheckUpData({
+        advice: undefined,
+        conclusion: undefined,
+        pictures: undefined,
+        videos: undefined,
+        result: undefined,
+      });
 
       navigate(`/checkup/${data.id}`);
-
     } catch (error) {
       console.log(error);
     }
-  }, [checkUpData, navigate, patientData, setCheckUpData, setPatientData])
+  }, [checkUpData, navigate, patientData, setCheckUpData, setPatientData]);
 
   return (
-    <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
-      <div className="flex flex-col space-y-3 w-full h-full justify-between">
-        {/* Step title */}
-        <div className="flex w-full items-center justify-center">
-          <Steps current={current} items={stepItems} />
-        </div>
+      <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
+        <div className="flex flex-col space-y-3 w-full h-full justify-between">
+          {/* Step title */}
+          <div className="flex w-full items-center justify-center">
+            <Steps current={current} items={stepItems} />
+          </div>
 
-        {/* Step content */}
-        <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
-          {steps[current].content}
-        </div>
+          {/* Step content */}
+          <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
+            {steps[current].content}
+          </div>
 
-        {/* Step navigation */}
-        <div className="flex w-full items-center justify-end">
-          {current > 0 && (
-            <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
-              Sebelumnya
-            </Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button
-              type="primary"
-              onClick={handleCreateReport}
-            >
-              Selesai
-            </Button>
-          )}
-          {current < steps.length - 1 && (
-            <Button type="primary" onClick={() => next()}>
-              Selanjutnya
-            </Button>
-          )}
+          {/* Step navigation */}
+          <div className="flex w-full items-center justify-end">
+            {current > 0 && (
+              <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+                Sebelumnya
+              </Button>
+            )}
+            {current === steps.length - 1 && (
+              <Button type="primary" onClick={handleCreateReport}>
+                Selesai
+              </Button>
+            )}
+            {current < steps.length - 1 && (
+              <Button type="primary" onClick={() => next()}>
+                Selanjutnya
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </AppLayout>
+      </AppLayout>
   );
 };
 

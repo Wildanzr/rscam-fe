@@ -4,20 +4,17 @@ import { useState } from "react";
 import { Layout, Menu } from "antd";
 import {
   RiDashboard3Line,
-  RiFileCopy2Line,
   RiHospitalLine,
 } from "react-icons/ri";
+import { useNavigate, Outlet } from "react-router-dom";
 
 type MenuItem = Required<MenuProps>["items"][number];
-type AppLayoutProps = {
-  children: React.ReactNode;
-};
 
 const { Sider } = Layout;
 
-const SideLayout = (props: AppLayoutProps) => {
-  // Props Destructuring
-  const { children } = props;
+const SideLayout = () => {
+  // Navigator
+  const navigate = useNavigate();
 
   // Local States
   const [collapsed, setCollapsed] = useState(false);
@@ -27,19 +24,24 @@ const SideLayout = (props: AppLayoutProps) => {
     label: React.ReactNode,
     key: React.Key,
     icon?: React.ReactNode,
+    onClick?: React.MouseEventHandler<HTMLElement>,
     children?: MenuItem[]
   ) => {
     return {
       key,
       icon,
       children,
+      onClick,
       label,
     } as MenuItem;
   };
 
+  const navigateTo = (path: string) => {
+    navigate(path);
+  }
+
   const items: MenuItem[] = [
-    getItem("Dashboard", "1", <RiDashboard3Line />),
-    getItem("Pemeriksaan", "2", <RiFileCopy2Line />),
+    getItem("Dashboard", "1", <RiDashboard3Line />, () => navigateTo("/")),
   ];
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -62,7 +64,7 @@ const SideLayout = (props: AppLayoutProps) => {
           items={items}
         />
       </Sider>
-      {children}
+      <Outlet />
     </Layout>
   );
 };

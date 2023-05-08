@@ -24,7 +24,7 @@ const ViewReport: React.FC = () => {
     globalStates: IGlobalContext;
   };
   const { qrCode, setQRCode } = globalStates;
-  
+
   // Local states
   const [hideQRCode, setHideQRCode] = useState<boolean>(false);
   const [reportData, setReportData] = useState<ReportProps | undefined | null>(
