@@ -86,7 +86,7 @@ const ViewReport: React.FC = () => {
     <AppLayout title={`Laporan ${checkupId}`} breadcrumb={breadcrumbItems}>
       <div className="flex w-full h-full items-start justify-center">
         <div id="qr-code" className="flex" hidden={hideQRCode}>
-          <QRCode value={`${API_HOST}/checkup/${checkupId}`} />
+          <QRCode value={`${API_HOST}/report/checkup/${checkupId}`} />
         </div>
 
         {reportData && qrCode ? (
