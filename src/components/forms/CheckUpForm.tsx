@@ -60,11 +60,11 @@ const CheckUpForm = (props: ICheckUpForm) => {
         <TextArea
           placeholder="Hasil pemeriksaan"
           showCount
-          maxLength={1000}
+          maxLength={600}
           autoSize={{ minRows: 3, maxRows: 5 }}
           onChange={debounce((e) => {
             setCheckUpData({ ...checkUpData, result: e.target.value });
-          }, 500)}
+          }, 300)}
           className="w-full"
         />
       </Item>
@@ -80,10 +80,10 @@ const CheckUpForm = (props: ICheckUpForm) => {
             placeholder="Kesimpulan"
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
-            maxLength={500}
+            maxLength={300}
             onChange={debounce((e) => {
               setCheckUpData({ ...checkUpData, conclusion: e.target.value });
-            }, 500)}
+            }, 300)}
             className="w-full"
           />
         </Item>
@@ -98,10 +98,10 @@ const CheckUpForm = (props: ICheckUpForm) => {
             placeholder="Saran"
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
-            maxLength={500}
+            maxLength={300}
             onChange={debounce((e) => {
               setCheckUpData({ ...checkUpData, advice: e.target.value });
-            }, 500)}
+            }, 300)}
             className="w-full"
           />
         </Item>

@@ -7,17 +7,14 @@ import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
 interface IAttachment {
   pictures: string[];
   videos: string[];
-  qrCode: string | undefined | null;
 }
 
 interface IImageDisplay {
   pictures: string[];
+  size: number;
 }
 
-const Attachment: React.FC<IAttachment> = ({
-  pictures,
-  qrCode,
-}: IAttachment) => {
+const Attachment: React.FC<IAttachment> = ({ pictures }: IAttachment) => {
   // Register font
   Font.register({
     family: "opensans",
@@ -73,17 +70,65 @@ const Attachment: React.FC<IAttachment> = ({
       <View style={styles.result_container}>
         <View style={styles.image_container}>
           <Text style={styles.result_title}>Lampiran Pemeriksaan</Text>
-          <ImageDisplay pictures={[pictures[0], pictures[1]]} />
-          <ImageDisplay pictures={[pictures[2], pictures[3]]} />
-          <ImageDisplay pictures={[pictures[4], pictures[5]]} />
+
+          {/* 1 */}
+          {pictures.length === 1 && (
+            <ImageDisplay size={270} pictures={[pictures[0]]} />
+          )}
+
+          {/* 2 */}
+          {pictures.length === 2 && (
+            <>
+              <ImageDisplay size={227} pictures={[pictures[0]]} />
+              <ImageDisplay size={227} pictures={[pictures[1]]} />
+            </>
+          )}
+
+          {/* 3  */}
+          {pictures.length === 3 && (
+            <>
+              <ImageDisplay size={150} pictures={[pictures[0]]} />
+              <ImageDisplay size={150} pictures={[pictures[1]]} />
+              <ImageDisplay size={150} pictures={[pictures[2]]} />
+            </>
+          )}
+
+          {/* 4  */}
+          {pictures.length === 4 && (
+            <>
+              <ImageDisplay size={130} pictures={[pictures[0], pictures[1]]} />
+              <ImageDisplay size={160} pictures={[pictures[2]]} />
+              <ImageDisplay size={160} pictures={[pictures[3]]} />
+            </>
+          )}
+
+          {/* 5  */}
+          {pictures.length === 5 && (
+            <>
+              <ImageDisplay size={130} pictures={[pictures[0], pictures[1]]} />
+              <ImageDisplay size={130} pictures={[pictures[2], pictures[3]]} />
+              <ImageDisplay size={160} pictures={[pictures[4]]} />
+            </>
+          )}
+
+          {/* 6  */}
+          {pictures.length === 6 && (
+            <>
+              <ImageDisplay size={130} pictures={[pictures[0], pictures[1]]} />
+              <ImageDisplay size={130} pictures={[pictures[2], pictures[3]]} />
+              <ImageDisplay size={130} pictures={[pictures[4], pictures[5]]} />
+            </>
+          )}
         </View>
-        <Image style={styles.qr_code} src={qrCode} />
       </View>
     </>
   );
 };
 
-const ImageDisplay: React.FC<IImageDisplay> = ({ pictures }: IImageDisplay) => {
+const ImageDisplay: React.FC<IImageDisplay> = ({
+  pictures,
+  size,
+}: IImageDisplay) => {
   // Register font
   Font.register({
     family: "opensans",
@@ -110,8 +155,8 @@ const ImageDisplay: React.FC<IImageDisplay> = ({ pictures }: IImageDisplay) => {
       gap: 5,
     },
     image: {
-      width: "130",
-      height: "130",
+      width: size,
+      height: size,
       objectFit: "cover",
     },
   });

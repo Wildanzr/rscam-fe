@@ -91,8 +91,12 @@ const PDF: React.FC<ReportProps> = ({
 
   const attachmentProps = {
     pictures,
-    videos,
+    videos
+  }
+
+  const signatureProps = {
     qrCode,
+    id
   }
   return (
     <>
@@ -135,7 +139,7 @@ const PDF: React.FC<ReportProps> = ({
             </View>
 
             <View style={styles.footer}>
-              <Signature />
+              <Signature {...signatureProps} />
               <Footer />
             </View>
           </Page>

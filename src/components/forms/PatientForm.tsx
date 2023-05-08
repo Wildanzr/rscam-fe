@@ -71,6 +71,7 @@ const PatientForm = (props: IPatientForm) => {
           <TextArea
             placeholder="Nama Pasien"
             autoSize={{ minRows: 1, maxRows: 1 }}
+            maxLength={60}
             className="w-full"
             onChange={debounce(
               (e) => setPatientData({ ...patientData, name: e.target.value }),
@@ -128,7 +129,7 @@ const PatientForm = (props: IPatientForm) => {
             placeholder="Alamat Pasien"
             autoSize={{ minRows: 1, maxRows: 3 }}
             showCount
-            maxLength={1000}
+            maxLength={100}
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, address: e.target.value }),
@@ -150,7 +151,7 @@ const PatientForm = (props: IPatientForm) => {
             placeholder="Keluhan Pasien"
             autoSize={{ minRows: 4, maxRows: 8 }}
             showCount
-            maxLength={1000}
+            maxLength={500}
             onChange={debounce(
               (e) =>
                 setPatientData({ ...patientData, complaint: e.target.value }),

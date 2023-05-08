@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, Text, StyleSheet, Font } from "@react-pdf/renderer";
+import { View, Image, Text, StyleSheet, Font } from "@react-pdf/renderer";
 import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
 import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
 import dayjs from "dayjs";
@@ -8,7 +8,12 @@ import "dayjs/locale/id";
 
 dayjs.locale("id");
 
-const Signature: React.FC = () => {
+interface ISignature {
+  qrCode: string | undefined | null;
+  id: string;
+}
+
+const Signature: React.FC<ISignature> = ({ qrCode, id }: ISignature) => {
   // Register font
   Font.register({
     family: "opensans",
@@ -36,7 +41,7 @@ const Signature: React.FC = () => {
       margin: "5 0 0 0",
     },
     notes: {
-      width: "60%",
+      width: "45%",
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-start",
@@ -48,6 +53,17 @@ const Signature: React.FC = () => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "space-between",
+    },
+    qr: {
+      width: "15%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    image: {
+      width: "100%",
+      objectFit: "contain",
     },
     identity_header: {
       width: "100%",
@@ -64,7 +80,7 @@ const Signature: React.FC = () => {
       margin: "0 0 5 0",
     },
     notes_text: {
-      width: "85%",
+      width: "95%",
       fontFamily: "opensans",
       fontSize: 8,
       fontWeight: 400,
@@ -93,10 +109,15 @@ const Signature: React.FC = () => {
           </Text>
         </View>
 
+        <View style={styles.qr}>
+          <Text style={styles.notes_title}>Scan disini:</Text>
+          <Image style={styles.image} src={qrCode} />
+        </View>
+
         <View style={styles.identity}>
           <View style={styles.identity_header}>
             <Text style={styles.identity_text}>
-              Malang, {dayjs().format("DD MMMM YYYY")}
+              Malang, {dayjs(id).format("DD MMMM YYYY")}
             </Text>
             <Text style={styles.identity_text}>Pemeriksa</Text>
           </View>
