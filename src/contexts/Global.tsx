@@ -1,11 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ChildrenProps, PatientProps, CheckUpProps } from "../@types";
 
-import { useState, createContext, useContext } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
+import { customAlphabet } from "nanoid";
 
 export const GlobalContext = createContext({});
 
 export const GlobalProvider = ({ children }: ChildrenProps) => {
+  // States
   const [patientData, setPatientData] = useState<PatientProps>({
     id: undefined,
     name: undefined,
@@ -28,6 +30,25 @@ export const GlobalProvider = ({ children }: ChildrenProps) => {
     false
   );
   const [qrCode, setQRCode] = useState<string | undefined | null>(undefined);
+  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+
+  // Functions
+  const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10)
+
+  // Monitor online status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(navigator.onLine);
+
+    // Listeners
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOnline);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOnline);
+    }
+  }, [isOnline])
 
   const globalStates = {
     patientData,
@@ -40,10 +61,15 @@ export const GlobalProvider = ({ children }: ChildrenProps) => {
     setRenderUploadedVideos,
     qrCode,
     setQRCode,
+    isOnline
   };
 
+  const globalFunctions = {
+    nanoid
+  }
+
   return (
-    <GlobalContext.Provider value={{ globalStates }}>
+    <GlobalContext.Provider value={{ globalStates, globalFunctions }}>
       {children}
     </GlobalContext.Provider>
   );

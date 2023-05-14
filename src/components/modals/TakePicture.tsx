@@ -3,11 +3,8 @@ import { CheckUpProps, VideoConstaintsProps } from "../../@types";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
-import { Button, Modal, Select } from "antd";
+import { Button, Modal, Select, UploadFile } from "antd";
 import Webcam from "react-webcam";
-import axios from "axios";
-
-const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -77,72 +74,41 @@ const TakePicture: React.FC = () => {
     }
   };
 
-  // Convert imageFileUri to File object with promise
-  const imageDataUriToFile = (
-    imageDataUri: string,
-    fileName: string
-  ): Promise<File> =>
-    new Promise((resolve, reject) => {
-      try {
-        const byteString = atob(imageDataUri.split(",")[1]);
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        resolve(new File([ab], fileName, { type: "image/jpeg" }));
-      } catch (err) {
-        reject(err);
-      }
-    });
+  // Upload offline
+  const handleOffline = (): UploadFile => {
+    const length = checkUpData?.pictures?.length || 0;
+    const url: string = capturedImage as string;
+    const result: UploadFile = {
+      name: `image-${length}.jpg`,
+      uid: `${length}`,
+      status: "done",
+      url
+    };
+
+    return result;
+  };
 
   // Handle upload picture with base64 string using axios
   const handleUploadPicture = async (): Promise<void> => {
-    const file = await imageDataUriToFile(capturedImage as string, "image.jpg");
-    const fmData = new FormData();
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    fmData.append("files", file);
-    try {
-      const { data } = await axios.post(
-        `${API_HOST}/checkup/upload`,
-        fmData,
-        config
-      );
+    const newPicture = handleOffline();
 
-      //   Result
-      const url = data.path;
-      const length = checkUpData?.pictures?.length || 0;
-      const newPictures = {
-        uid: `${length}`,
-        name: `image-${length}.jpg`,
-        status: "done" as const,
-        url: url,
-      };
+    setCheckUpData({
+      ...checkUpData,
+      pictures: checkUpData.pictures
+        ? [...checkUpData.pictures, newPicture]
+        : [newPicture],
+    });
 
-      setCheckUpData({
-        ...checkUpData,
-        pictures: checkUpData.pictures
-          ? [...checkUpData.pictures, newPictures]
-          : [newPictures],
-      });
+    setRenderUploadedPictures((prev) => !prev);
 
-      setRenderUploadedPictures((prev) => !prev);
-
-      closeModal();
-    } catch (err) {
-      console.log("Eroor: ", err);
-    }
+    closeModal();
   };
 
   const handleDevices = useCallback((MediaDevices: MediaDeviceInfo[]) => {
     setDevices(MediaDevices);
     setVideoConstraints({
-      width: 1280,
-      height: 720,
+      width: 700,
+      height: 700,
       facingMode: "environment",
       deviceId: MediaDevices[0].deviceId,
     });
@@ -205,8 +171,8 @@ const TakePicture: React.FC = () => {
                   onChange={(value) => {
                     const selectedDevice = devices[value as unknown as number];
                     setVideoConstraints({
-                      width: 1280,
-                      height: 720,
+                      width: 700,
+                      height: 700,
                       facingMode: "environment",
                       deviceId: selectedDevice.deviceId,
                     });

@@ -1,23 +1,36 @@
-import React from "react";
-import { Breadcrumb, Layout } from "antd";
-
 import type { ItemType } from "antd/es/breadcrumb/Breadcrumb";
 
-type AppLayoutProps = {
+import React from "react";
+import { useGlobalContext } from "../contexts/Global";
+
+import { Indicator } from "../components/other";
+import { Breadcrumb, Layout } from "antd";
+
+
+interface IAppLayout {
   title: string;
   breadcrumb: ItemType[];
   children: React.ReactNode;
-};
+}
 
-const AppLayout: React.FC<AppLayoutProps> = (props: AppLayoutProps) => {
+interface IGlobalContext {
+  isOnline: boolean;
+}
+
+const AppLayout: React.FC<IAppLayout> = (props: IAppLayout) => {
   // Props Destructuring
   const { title, breadcrumb, children } = props;
 
+  // Global States
+  const { globalStates } = useGlobalContext() as { globalStates: IGlobalContext };
+  const { isOnline } = globalStates;
+  
   return (
     <Layout className="site-layout">
       <div className="flex flex-col w-full h-full bg-slate-100">
-        <div className="flex w-full items-center justify-start py-4 bg-white px-3">
-          <p className="w-full text-2xl font-medium mb-0">{title}</p>
+        <div className="flex w-full items-center justify-between py-4 bg-white px-3">
+          <p className="text-2xl font-medium mb-0">{title}</p>
+          <Indicator status={isOnline} />
         </div>
         <div className="flex flex-col w-full h-full space-y-2 px-3 py-3">
           <Breadcrumb items={breadcrumb} />

@@ -11,10 +11,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
-import axios from "axios";
 
 const { Dragger } = Upload;
-const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -43,33 +41,31 @@ const UploadPictures = () => {
     checkUpData.pictures || []
   );
 
+  const fileToBase64 = (file: RcFile): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        const base64 = result.split(",")[1]; // Extract the base64-encoded data from the data URL
+        const mimeType = file.type;
+        resolve(`data:${mimeType};base64,${base64}`);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   // Handle upload file using axios
   const handleUpload = async (options: UploadRequestOption<unknown>) => {
-    const { onSuccess, onError, file } = options as unknown as {
+    const { onSuccess, file } = options as unknown as {
       onSuccess: (msg: string) => void;
       onError: (err: Error) => void;
       file: RcFile;
     };
 
-    const fmData = new FormData();
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    fmData.append("files", file);
-    try {
-      const { data } = await axios.post(
-        `${API_HOST}/checkup/upload`,
-        fmData,
-        config
-      );
-      const url = data.path;
-      onSuccess(url);
-    } catch (err) {
-      console.log("Eroor: ", err);
-      onError(err as Error);
-    }
+    const convertedFile = await fileToBase64(file);
+    onSuccess(convertedFile);
+    setRenderUploadedPictures(true);
   };
 
   const getBase64 = (file: RcFile): Promise<string> =>
@@ -107,7 +103,7 @@ const UploadPictures = () => {
           uid: `-${index}`,
           name: `image-${index}.jpg`,
           status: "done" as const,
-          url: file.response,
+          url: file.response || file.url as string,
         };
       });
 
@@ -154,8 +150,12 @@ const UploadPictures = () => {
 
   return (
     <>
-      <ImgCrop quality={0.8} showReset={true}>
-        <Dragger {...draggerProps}>
+      <ImgCrop
+       quality={1}
+       showReset={true}
+       aspect={1 / 1}
+      >
+        <Dragger {...draggerProps} >
           <p className="ant-upload-drag-icon">
             <PlusOutlined />
           </p>
