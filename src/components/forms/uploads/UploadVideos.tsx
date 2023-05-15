@@ -9,10 +9,10 @@ import { PlusOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { RcFile } from "antd/es/upload";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
-import axios from "axios";
 
 const { Dragger } = Upload;
-const API_HOST = import.meta.env.VITE_API_HOST as string;
+
+import videothumb from "../../../assets/videothumb.png";
 
 interface IGlobalContext {
   checkUpData: CheckUpProps;
@@ -39,33 +39,35 @@ const UploadVideos: React.FC = () => {
   const [previewTitle, setPreviewTitle] = useState<string>("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  async function convertFileToBlob(file: File): Promise<Blob> {
+    return new Promise<Blob>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const blob = new Blob([reader.result as ArrayBuffer], {
+          type: file.type,
+        });
+        resolve(blob);
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
   // Handle upload file using axios
   const handleUpload = async (options: UploadRequestOption<unknown>) => {
-    const { onSuccess, onError, file } = options as unknown as {
+    const { onSuccess, file } = options as unknown as {
       onSuccess: (msg: string) => void;
       onError: (err: Error) => void;
       file: RcFile;
     };
 
-    const fmData = new FormData();
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    fmData.append("files", file);
-    try {
-      const { data } = await axios.post(
-        `${API_HOST}/checkup/upload`,
-        fmData,
-        config
-      );
-      const url = data.path;
-      onSuccess(url);
-    } catch (err) {
-      console.log("Eroor: ", err);
-      onError(err as Error);
-    }
+    const blob = await convertFileToBlob(file);
+    const urlVideo = URL.createObjectURL(blob);
+
+    setTimeout(async () => {
+      onSuccess(urlVideo);
+      setRenderUploadedVideos(true);
+    }, 1000);
   };
 
   // Handle before upload
@@ -95,7 +97,9 @@ const UploadVideos: React.FC = () => {
     );
   };
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+  const handleChange: UploadProps["onChange"] = async ({
+    fileList: newFileList,
+  }) => {
     // Filter successfully uploaded pictures and map to new array
     const newVideos = newFileList
       .filter((file) => file.status === "done")
@@ -104,9 +108,23 @@ const UploadVideos: React.FC = () => {
           uid: `-${index}`,
           name: `video-${index}.jpg`,
           status: "done" as const,
-          url: file.response,
+          url: file.response || file.url,
+          thumbUrl: videothumb,
         };
       });
+
+    const newV = [] as UploadFile[];
+
+    for (let index = 0; index < newVideos.length; index++) {
+      const newVideo: UploadFile = {
+        name: `video-${index}.jpg`,
+        uid: `-${index}`,
+        status: "done" as const,
+        url: newVideos[index].url,
+        thumbUrl: videothumb,
+      };
+      newV.push(newVideo);
+    }
 
     // Update checkUpData
     setCheckUpData((prev) => ({

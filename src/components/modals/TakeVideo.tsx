@@ -2,10 +2,11 @@ import { CheckUpProps, VideoConstaintsProps } from "../../@types";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
-import { Button, Modal, Select } from "antd";
+import { Button, Modal, Select, UploadFile } from "antd";
 import Webcam from "react-webcam";
-import axios from "axios";
-const API_HOST = import.meta.env.VITE_API_HOST as string;
+
+import videothumb from '../../assets/videothumb.png'
+
 interface IGlobalContext {
   checkUpData: CheckUpProps;
   setCheckUpData: React.Dispatch<React.SetStateAction<CheckUpProps>>;
@@ -24,11 +25,12 @@ const TakeVideo: React.FC = () => {
   const [videoVisible, setVideoVisible] = useState<boolean>(true);
   const [captureState, setCaptureState] = useState<string>("idle");
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-  const [videoConstraints, setVideoConstraints] = useState<VideoConstaintsProps>({
-    width: 1280,
-    height: 720,
-    facingMode: "environment",
-  });
+  const [videoConstraints, setVideoConstraints] =
+    useState<VideoConstaintsProps>({
+      width: 1280,
+      height: 720,
+      facingMode: "environment",
+    });
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
   // Refs
@@ -95,46 +97,27 @@ const TakeVideo: React.FC = () => {
       const blob = new Blob(recordedChunks, {
         type: "video/webm",
       });
+      const videoObjectURL = URL.createObjectURL(blob)
 
-      const file = new File([blob], "video.webm", { type: blob.type });
-
-      const fmData = new FormData();
-      const config = {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
+      const length = checkUpData?.videos?.length || 0;
+      const newVideos: UploadFile = {
+        uid: `${length}`,
+        name: `video-${length}.webm`,
+        status: "done" as const,
+        url: videoObjectURL,
+        thumbUrl: videothumb
       };
-      fmData.append("files", file);
-      try {
-        const { data } = await axios.post(
-          `${API_HOST}/checkup/upload`,
-          fmData,
-          config
-        );
 
-        //   Result
-        const url = data.path;
-        const length = checkUpData?.videos?.length || 0;
-        const newVideos = {
-          uid: `${length}`,
-          name: `video-${length}.webm`,
-          status: "done" as const,
-          url: url,
-        };
+      setCheckUpData({
+        ...checkUpData,
+        videos: checkUpData.videos
+          ? [...checkUpData.videos, newVideos]
+          : [newVideos],
+      });
 
-        setCheckUpData({
-          ...checkUpData,
-          videos: checkUpData.videos
-            ? [...checkUpData.videos, newVideos]
-            : [newVideos],
-        });
-
-        setRenderUploadedVideos((prev) => !prev);
-        setRecordedChunks([]);
-        closeModal();
-      } catch (err) {
-        console.log("Eroor: ", err);
-      }
+      setRenderUploadedVideos((prev) => !prev);
+      setRecordedChunks([]);
+      closeModal();
     }
   }, [checkUpData, recordedChunks, setCheckUpData, setRenderUploadedVideos]);
 
@@ -167,14 +150,12 @@ const TakeVideo: React.FC = () => {
   // Detect devices
   useEffect(() => {
     // only get devices with camera
-    navigator.mediaDevices
-      .enumerateDevices()
-      .then((MediaDevices) => {
-        const videoDevices = MediaDevices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        handleDevices(videoDevices);
-      })
+    navigator.mediaDevices.enumerateDevices().then((MediaDevices) => {
+      const videoDevices = MediaDevices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      handleDevices(videoDevices);
+    });
   }, [handleDevices]);
 
   return (
@@ -232,6 +213,7 @@ const TakeVideo: React.FC = () => {
                 autoPlay
                 loop
                 className="flex w-full"
+                id="recorded-video"
                 hidden={captureState !== "stopped"}
               >
                 <source
