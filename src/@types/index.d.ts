@@ -48,3 +48,31 @@ export type ReportProps = {
     pictures: string[];
     videos: string[];
 }
+
+export type AttachmentProps = {
+    [key: string]: {
+        content_type: string;
+        data: string;
+    }
+}
+
+type AttachmentData = string | Blob | Buffer;
+
+interface FullAttachment {
+    content_type: string;
+    digest?: string | undefined;
+    data: AttachmentData;
+}
+
+interface StubAttachment {
+    content_type: string;
+    digest: string;
+    stub: true;
+    length: number;
+}
+
+export type Attachment = StubAttachment | FullAttachment;
+
+export type Attachments = {
+    [attachmentId: string]: Attachment;
+}

@@ -101,7 +101,7 @@ const ReviewCheckUp: React.FC = () => {
 
       <Descriptions layout="vertical">
         <Item label="Foto">
-          <div className="flex flex-row flex-wrap space-x-2">
+          <div className="flex flex-row flex-wrap gap-2">
             {checkUpData.pictures?.length !== 0 &&
               checkUpData.pictures !== undefined &&
               checkUpData.pictures.map((image, index) => (
@@ -116,7 +116,7 @@ const ReviewCheckUp: React.FC = () => {
           </div>
         </Item>
         <Item label="Video">
-          <div className="flex flex-row flex-wrap space-x-2">
+          <div className="flex flex-row flex-wrap gap-2">
             {checkUpData.videos?.length !== 0 &&
               checkUpData.videos !== undefined &&
               checkUpData.videos.map((video, index) => (

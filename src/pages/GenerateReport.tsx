@@ -3,13 +3,15 @@ import type { UploadFile } from "antd/es/upload/interface";
 import type { ItemType } from "antd/es/breadcrumb/Breadcrumb";
 import React, { useState, useCallback } from "react";
 import { useGlobalContext } from "../contexts/Global";
+import { useCheckupDb } from "../database/useCheckupDb";
+import { useAttachmentDb } from "../database/useAttachmentDb";
 
 import { AppLayout } from "../layouts";
 import { ReviewCheckUp } from "../views";
 import { PatientForm, CheckUpForm } from "../components/forms";
 import { Button, message, Steps } from "antd";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { ICheckup } from "../entities/checkup";
 
 interface IGlobalContext {
   patientData: PatientProps;
@@ -18,15 +20,19 @@ interface IGlobalContext {
   setCheckUpData: React.Dispatch<React.SetStateAction<CheckUpProps>>;
 }
 
-const API_HOST = import.meta.env.VITE_API_HOST as string;
+interface IGlobalFunctions {
+  nanoid: (size?: number) => string;
+}
 
 const GenerateReport: React.FC = () => {
   // Global States
-  const { globalStates } = useGlobalContext() as {
+  const { globalStates, globalFunctions } = useGlobalContext() as {
     globalStates: IGlobalContext;
+    globalFunctions: IGlobalFunctions;
   };
   const { patientData, checkUpData, setCheckUpData, setPatientData } =
     globalStates;
+  const { nanoid } = globalFunctions;
 
   // React Router Navigate
   const navigate = useNavigate();
@@ -42,6 +48,10 @@ const GenerateReport: React.FC = () => {
       onClick: () => navigate("/"),
     },
   ];
+
+  // Db
+  const { checkupDb } = useCheckupDb();
+  const { attachmentDb } = useAttachmentDb();
 
   const steps = [
     {
@@ -107,18 +117,91 @@ const GenerateReport: React.FC = () => {
     setCurrent(current - 1);
   };
 
-  const handleCreateReport = useCallback(async () => {
-    const videos = checkUpData.videos?.map((video) => video.url);
-    const pictures = checkUpData.pictures?.map((picture) => picture.url);
-    try {
-      const payload = {
-        ...patientData,
-        ...checkUpData,
-        videos,
-        pictures,
-      };
+  const convertUrlToBlob = async (videoUrl: string): Promise<Blob> => {
+    const response = await fetch(videoUrl);
+    const blob = await response.blob();
+    return blob;
+  };
 
-      const { data } = await axios.post(`${API_HOST}/checkup`, payload);
+  const handlePicsAttachment = useCallback(
+    async (pictures: UploadFile[]): Promise<string[]> => {
+      const res: string[] = [];
+      for (let index = 0; index < pictures.length; index++) {
+        const name = `${Date.now()}-pic-${nanoid()}.jpg`;
+        const base64 = pictures[index].url?.toString().split(",")[1] as string;
+        await attachmentDb.put({
+          _id: name,
+          name,
+          sync: false,
+          type: "image/jpeg",
+          _attachments: {
+            name: {
+              content_type: "image/jpeg",
+              data: base64,
+            },
+          },
+        });
+        res.push(name);
+      }
+
+      return res;
+    },
+    [attachmentDb, nanoid]
+  );
+
+  const handleVidsAttachment = useCallback(
+    async (videos: UploadFile[]): Promise<string[]> => {
+      const res: string[] = [];
+      for (let index = 0; index < videos.length; index++) {
+        const name = `${Date.now()}-vid-${nanoid()}.webm`;
+        const blob = await convertUrlToBlob(videos[index].url as string);
+
+        await attachmentDb.put({
+          _id: name,
+          name,
+          sync: false,
+          type: "video/webm",
+          _attachments: {
+            [name]: {
+              content_type: "video/webm",
+              data: blob,
+            },
+          },
+        });
+
+        res.push(name);
+      }
+      return res;
+    },
+    [attachmentDb, nanoid]
+  );
+
+  const handleCreateReport = useCallback(async () => {
+    try {
+      // Upload pictures
+      const pics = await handlePicsAttachment(
+        checkUpData.pictures as UploadFile[]
+      );
+
+      // Upload videos
+      const vids = await handleVidsAttachment(
+        checkUpData.videos as UploadFile[]
+      );
+
+      const res = await checkupDb.put<ICheckup>({
+        _id: `checkup-${nanoid()}-${nanoid()}`,
+        address: patientData.address as string,
+        gender: patientData.gender as boolean,
+        name: patientData.name as string,
+        dob: patientData.dob,
+        complaint: patientData.complaint as string,
+        result: checkUpData.result as string,
+        advice: checkUpData.advice as string,
+        conclusion: checkUpData.conclusion as string,
+        pictures: [...pics],
+        videos: [...vids],
+      });
+
       message.success("Laporan berhasil dibuat!");
 
       // Reset global states
@@ -138,45 +221,45 @@ const GenerateReport: React.FC = () => {
         result: undefined,
       });
 
-      navigate(`/checkup/${data.id}`);
+      // navigate(`/checkup/${res.id}`);
     } catch (error) {
       console.log(error);
     }
-  }, [checkUpData, navigate, patientData, setCheckUpData, setPatientData]);
+  }, [checkUpData.advice, checkUpData.conclusion, checkUpData.pictures, checkUpData.result, checkUpData.videos, checkupDb, handlePicsAttachment, handleVidsAttachment, nanoid, patientData.address, patientData.complaint, patientData.dob, patientData.gender, patientData.name, setCheckUpData, setPatientData]);
 
   return (
-      <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
-        <div className="flex flex-col space-y-3 w-full h-full justify-between">
-          {/* Step title */}
-          <div className="flex w-full items-center justify-center">
-            <Steps current={current} items={stepItems} />
-          </div>
-
-          {/* Step content */}
-          <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
-            {steps[current].content}
-          </div>
-
-          {/* Step navigation */}
-          <div className="flex w-full items-center justify-end">
-            {current > 0 && (
-              <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
-                Sebelumnya
-              </Button>
-            )}
-            {current === steps.length - 1 && (
-              <Button type="primary" onClick={handleCreateReport}>
-                Selesai
-              </Button>
-            )}
-            {current < steps.length - 1 && (
-              <Button type="primary" onClick={() => next()}>
-                Selanjutnya
-              </Button>
-            )}
-          </div>
+    <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
+      <div className="flex flex-col space-y-3 w-full h-full justify-between">
+        {/* Step title */}
+        <div className="flex w-full items-center justify-center">
+          <Steps current={current} items={stepItems} />
         </div>
-      </AppLayout>
+
+        {/* Step content */}
+        <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
+          {steps[current].content}
+        </div>
+
+        {/* Step navigation */}
+        <div className="flex w-full items-center justify-end">
+          {current > 0 && (
+            <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
+              Sebelumnya
+            </Button>
+          )}
+          {current === steps.length - 1 && (
+            <Button type="primary" onClick={handleCreateReport}>
+              Selesai
+            </Button>
+          )}
+          {current < steps.length - 1 && (
+            <Button type="primary" onClick={() => next()}>
+              Selanjutnya
+            </Button>
+          )}
+        </div>
+      </div>
+    </AppLayout>
   );
 };
 
