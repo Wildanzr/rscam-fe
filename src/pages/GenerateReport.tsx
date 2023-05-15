@@ -135,7 +135,7 @@ const GenerateReport: React.FC = () => {
           sync: false,
           type: "image/jpeg",
           _attachments: {
-            name: {
+            [name]: {
               content_type: "image/jpeg",
               data: base64,
             },
@@ -202,6 +202,8 @@ const GenerateReport: React.FC = () => {
         videos: [...vids],
       });
 
+      console.log(res)
+
       message.success("Laporan berhasil dibuat!");
 
       // Reset global states
@@ -229,19 +231,19 @@ const GenerateReport: React.FC = () => {
 
   return (
     <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
-      <div className="flex flex-col space-y-3 w-full h-full justify-between">
+      <div className="flex flex-col justify-between w-full h-full space-y-3">
         {/* Step title */}
-        <div className="flex w-full items-center justify-center">
+        <div className="flex items-center justify-center w-full">
           <Steps current={current} items={stepItems} />
         </div>
 
         {/* Step content */}
-        <div className="flex w-full h-full px-3 py-3 bg-slate-100 rounded-2xl border-2 border-dashed">
+        <div className="flex w-full h-full px-3 py-3 border-2 border-dashed bg-slate-100 rounded-2xl">
           {steps[current].content}
         </div>
 
         {/* Step navigation */}
-        <div className="flex w-full items-center justify-end">
+        <div className="flex items-center justify-end w-full">
           {current > 0 && (
             <Button style={{ margin: "0 8px" }} onClick={() => prev()}>
               Sebelumnya

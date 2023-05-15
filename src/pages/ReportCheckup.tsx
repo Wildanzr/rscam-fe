@@ -1,15 +1,15 @@
 import type { ReportProps } from "../@types";
 import React, { useState, useEffect, useCallback } from "react";
+import { useCheckupDb } from "../database/useCheckupDb";
+import { useAttachmentDb } from "../database/useAttachmentDb";
 
 import { PreviewImage, PreviewVideo } from "../components/modals";
 import { Descriptions, Divider, Spin } from "antd";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import axios from "axios";
 import { NotFound } from ".";
 
 const { Item } = Descriptions;
-const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 const ReportCheckup: React.FC = () => {
   // Path location using route
@@ -27,16 +27,48 @@ const ReportCheckup: React.FC = () => {
   const [previewVideoOpen, setPreviewVideoOpen] = useState<boolean>(false);
   const [previewVideoTitle, setPreviewVideoTitle] = useState<string>("");
 
+  // Database
+  const { checkupDb } = useCheckupDb()
+  const { attachmentDb } = useAttachmentDb()
+
+  // fetch picture attachment
+  const fetchPictures = useCallback(async (pictures: string[]): Promise<string []> => {
+    const res: string[] = []
+    for (const pic of pictures) {
+      const imgData = await attachmentDb.getAttachment(pic, pic)
+      const url = URL.createObjectURL(imgData as Blob) as string
+      res.push(url)
+    }
+
+    return res
+  }, [attachmentDb])
+
   // fetch report data
   const fetchReportData = useCallback(async () => {
     try {
-      const { data } = await axios.get(`${API_HOST}/checkup/${checkupId}`);
-      setReportData(data);
+      const res = await checkupDb.get(checkupId as string)
+      const { videos, pictures, _id, dob } = res
+
+      const pics = await fetchPictures(pictures)
+      const vids = await fetchPictures(videos)
+      
+      const newReportData: ReportProps = {
+        ...res,
+        dob: dayjs(dob).format("DD MMMM YYYY"),
+        id: _id,
+        pictures: pics,
+        videos: vids
+      }
+
+      setReportData(newReportData)
+
+
+
     } catch (error) {
       console.log(error);
       setReportData(null);
     }
-  }, [checkupId]);
+  }, [checkupDb, checkupId, fetchPictures]);
 
   // Handle preview image
   const handlePreviewImage = (path: string) => {
@@ -80,7 +112,7 @@ const ReportCheckup: React.FC = () => {
   }, [fetchReportData, checkupId]);
 
   return (
-    <div className="flex flex-col space-y-2 w-full h-full">
+    <div className="flex flex-col w-full h-full px-5 py-5 space-y-2">
       {reportData === undefined ? (
         <Spin size="large" />
       ) : reportData === null ? (
@@ -113,7 +145,7 @@ const ReportCheckup: React.FC = () => {
 
           <Descriptions layout="vertical">
             <Item label="Foto">
-              <div className="flex flex-row flex-wrap space-x-2">
+              <div className="flex flex-row flex-wrap gap-2">
                 {reportData.pictures?.length !== 0 &&
                   reportData.pictures !== undefined &&
                   reportData.pictures.map((image, index) => (
@@ -121,21 +153,21 @@ const ReportCheckup: React.FC = () => {
                       key={index}
                       src={image}
                       alt={image}
-                      className="w-32 h-32 object-cover cursor-pointer"
+                      className="object-cover w-32 h-32 cursor-pointer"
                       onClick={() => handlePreviewImage(image)}
                     />
                   ))}
               </div>
             </Item>
             <Item label="Video">
-              <div className="flex flex-row flex-wrap space-x-2">
+              <div className="flex flex-row flex-wrap gap-2">
                 {reportData.videos?.length !== 0 &&
                   reportData.videos !== undefined &&
                   reportData.videos.map((video, index) => (
                     <video
                       key={index}
                       src={video}
-                      className="w-32 h-32 object-cover cursor-pointer"
+                      className="object-cover w-32 h-32 cursor-pointer"
                       onClick={() => handlePreviewVideo(video)}
                     />
                   ))}
