@@ -7,8 +7,7 @@ import { AutoLayout } from "../other";
 import { UploadPictures, UploadVideos } from "./uploads";
 import { TakePicture, TakeVideo } from "../modals";
 import { Form, Input } from "antd";
-
-import debounce from "lodash.debounce";
+import useDebounce from "../../hooks/useDebounce";
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -49,7 +48,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
       form={form}
       initialValues={checkUpData}
       name="checkup-form"
-      className="flex flex-col space-y-2 w-full h-full items-start justify-start"
+      className="flex flex-col items-start justify-start w-full h-full space-y-2"
     >
       {/* Result */}
       <Item
@@ -62,7 +61,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
           showCount
           maxLength={600}
           autoSize={{ minRows: 3, maxRows: 5 }}
-          onChange={debounce((e) => {
+          onChange={useDebounce((e) => {
             setCheckUpData({ ...checkUpData, result: e.target.value });
           }, 300)}
           className="w-full"
@@ -81,7 +80,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
             maxLength={300}
-            onChange={debounce((e) => {
+            onChange={useDebounce((e) => {
               setCheckUpData({ ...checkUpData, conclusion: e.target.value });
             }, 300)}
             className="w-full"
@@ -99,7 +98,7 @@ const CheckUpForm = (props: ICheckUpForm) => {
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
             maxLength={300}
-            onChange={debounce((e) => {
+            onChange={useDebounce((e) => {
               setCheckUpData({ ...checkUpData, advice: e.target.value });
             }, 300)}
             className="w-full"

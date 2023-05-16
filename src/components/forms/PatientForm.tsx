@@ -5,8 +5,8 @@ import React, { useEffect } from "react";
 import { useGlobalContext } from "../../contexts/Global";
 
 import { AutoLayout } from "../other";
+import useDebounce from "../../hooks/useDebounce";
 import { Form, Input, Select, DatePicker } from "antd";
-import debounce from "lodash.debounce";
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -59,7 +59,7 @@ const PatientForm = (props: IPatientForm) => {
       name="patient-form"
       onFinish={onFinish}
       initialValues={patientData}
-      className="flex flex-col w-full h-full items-start justify-start"
+      className="flex flex-col items-start justify-start w-full h-full"
     >
       <AutoLayout>
         {/* Patient name */}
@@ -73,7 +73,7 @@ const PatientForm = (props: IPatientForm) => {
             autoSize={{ minRows: 1, maxRows: 1 }}
             maxLength={60}
             className="w-full"
-            onChange={debounce(
+            onChange={useDebounce(
               (e) => setPatientData({ ...patientData, name: e.target.value }),
               300
             )}
@@ -89,7 +89,7 @@ const PatientForm = (props: IPatientForm) => {
           <Select
             placeholder="Jenis Kelamin"
             className="w-full"
-            onChange={debounce(
+            onChange={useDebounce(
               (value) => setPatientData({ ...patientData, gender: value }),
               300
             )}
@@ -109,7 +109,7 @@ const PatientForm = (props: IPatientForm) => {
           <DatePicker
             placeholder="Tanggal Lahir"
             format={DATE_FORMAT}
-            onChange={debounce(
+            onChange={useDebounce(
               (date) => setPatientData({ ...patientData, dob: date }),
               300
             )}
@@ -130,7 +130,7 @@ const PatientForm = (props: IPatientForm) => {
             autoSize={{ minRows: 1, maxRows: 3 }}
             showCount
             maxLength={100}
-            onChange={debounce(
+            onChange={useDebounce(
               (e) =>
                 setPatientData({ ...patientData, address: e.target.value }),
               300
@@ -152,7 +152,7 @@ const PatientForm = (props: IPatientForm) => {
             autoSize={{ minRows: 4, maxRows: 8 }}
             showCount
             maxLength={500}
-            onChange={debounce(
+            onChange={useDebounce(
               (e) =>
                 setPatientData({ ...patientData, complaint: e.target.value }),
               300

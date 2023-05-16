@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { CheckUpProps, VideoConstaintsProps } from "../../@types";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGlobalContext } from "../../contexts/Global";
@@ -145,8 +144,8 @@ const TakePicture: React.FC = () => {
         open={visible}
         onCancel={closeModal}
       >
-        <div className="flex flex-col space-y-4 w-full h-full items-center justify-center">
-          <div className="flex flex-col space-y-2 w-full">
+        <div className="flex flex-col items-center justify-center w-full h-full space-y-4">
+          <div className="flex flex-col w-full space-y-2">
             {cameraVisible && (
               <>
                 <Webcam
@@ -184,12 +183,12 @@ const TakePicture: React.FC = () => {
 
           {/* Captured image */}
           {capturedImage && (
-            <div className="flex flex-col w-full items-center justify-center">
+            <div className="flex flex-col items-center justify-center w-full">
               <img src={capturedImage} alt="captured" />
             </div>
           )}
 
-          <div className="flex flex-row w-full space-x-3 items-center justify-center">
+          <div className="flex flex-row items-center justify-center w-full space-x-3">
             <Button type="primary" onClick={handleRetakeOrCapture}>
               {capturedImage ? "Ambil Ulang" : "Ambil Foto"}
             </Button>
