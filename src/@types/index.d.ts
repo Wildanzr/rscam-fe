@@ -39,7 +39,7 @@ export type ReportProps = {
     id: string;
     name: string;
     gender: boolean;
-    dob: string;
+    dob: dayjs | undefined;
     address: string;
     complaint: string;
     result: string;
@@ -47,6 +47,7 @@ export type ReportProps = {
     advice: string;
     pictures: string[];
     videos: string[];
+    at: dayjs | Date;
 }
 
 export type AttachmentProps = {

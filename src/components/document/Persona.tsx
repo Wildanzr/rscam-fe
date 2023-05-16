@@ -7,7 +7,7 @@ import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
 
 interface IPersona {
   name: string;
-  age: number;
+  age: string;
   gender: boolean;
   address: string;
   doctor: string;

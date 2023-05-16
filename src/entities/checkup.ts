@@ -1,4 +1,4 @@
-export interface ICheckup {
+export type ICheckup =  {
   _id?: string;
   _rev?: string;
   name: string;
@@ -11,4 +11,6 @@ export interface ICheckup {
   advice: string;
   pictures: string[];
   videos: string[];
+  sync: boolean;
+  at: Date;
 }

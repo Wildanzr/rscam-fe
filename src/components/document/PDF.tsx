@@ -32,7 +32,8 @@ const PDF: React.FC<ReportProps> = ({
   name,
   pictures,
   result,
-  videos
+  videos,
+  at
 }: ReportProps) => {
   // Global states
   const { globalStates } = useGlobalContext() as { globalStates: IGlobalContext };
@@ -43,7 +44,7 @@ const PDF: React.FC<ReportProps> = ({
     page: {
       flexDirection: "column",
       backgroundColor: "#FFFFFF",
-      padding: 10,
+      padding: 20,
     },
     header: {
       width: "100%",
@@ -125,12 +126,12 @@ const PDF: React.FC<ReportProps> = ({
             <View style={styles.body}>
               <Persona
                 name={name}
-                age={dayjs().diff(dob, "year")}
+                age={`${dayjs().diff(dob, "year")}`}
                 gender={gender}
                 address={address}
-                doctor="dr. Gunazar Gesang, Sp.PK., M.Kes"
-                date={dayjs(id).format("dddd, DD MMMM YYYY")}
-                time={dayjs(id).format("HH:mm:ss [WIB]")}
+                doctor="dr. Gunazar, Sp.PK., M.Kes"
+                date={dayjs(at).format("dddd, DD MMMM YYYY")}
+                time={dayjs(at).format("HH:mm:ss [WIB]")}
               />
               <View style={styles.result}>
                 <Checkup {...checkupProps} />

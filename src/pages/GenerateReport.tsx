@@ -12,6 +12,7 @@ import { PatientForm, CheckUpForm } from "../components/forms";
 import { Button, message, Steps } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ICheckup } from "../entities/checkup";
+import dayjs from "dayjs";
 
 interface IGlobalContext {
   patientData: PatientProps;
@@ -189,20 +190,20 @@ const GenerateReport: React.FC = () => {
       );
 
       const res = await checkupDb.put<ICheckup>({
-        _id: `checkup-${nanoid()}-${nanoid()}`,
+        _id: `${Date.now()}-checkup-${nanoid()}`,
         address: patientData.address as string,
         gender: patientData.gender as boolean,
         name: patientData.name as string,
-        dob: patientData.dob,
+        dob: dayjs(patientData.dob).toDate(),
         complaint: patientData.complaint as string,
         result: checkUpData.result as string,
         advice: checkUpData.advice as string,
         conclusion: checkUpData.conclusion as string,
         pictures: [...pics],
         videos: [...vids],
+        sync: false,
+        at: new Date(),
       });
-
-      console.log(res)
 
       message.success("Laporan berhasil dibuat!");
 
@@ -223,11 +224,11 @@ const GenerateReport: React.FC = () => {
         result: undefined,
       });
 
-      // navigate(`/checkup/${res.id}`);
+      navigate(`/checkup/${res.id}`);
     } catch (error) {
       console.log(error);
     }
-  }, [checkUpData.advice, checkUpData.conclusion, checkUpData.pictures, checkUpData.result, checkUpData.videos, checkupDb, handlePicsAttachment, handleVidsAttachment, nanoid, patientData.address, patientData.complaint, patientData.dob, patientData.gender, patientData.name, setCheckUpData, setPatientData]);
+  }, [checkUpData.advice, checkUpData.conclusion, checkUpData.pictures, checkUpData.result, checkUpData.videos, checkupDb, handlePicsAttachment, handleVidsAttachment, nanoid, navigate, patientData.address, patientData.complaint, patientData.dob, patientData.gender, patientData.name, setCheckUpData, setPatientData]);
 
   return (
     <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>

@@ -3,13 +3,15 @@ import type { ReportProps } from "../@types";
 import React, { useState, useEffect, useCallback } from "react";
 import { useGlobalContext } from "../contexts/Global";
 import { AppLayout } from "../layouts";
+import { useCheckupDb } from "../database/useCheckupDb";
+import { useAttachmentDb } from "../database/useAttachmentDb";
 
 import { NotFound } from ".";
 import { PDF } from "../components/document";
 import { Spin, QRCode } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toPng } from "html-to-image";
-import axios from "axios";
+import dayjs from "dayjs";
 
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 
@@ -30,6 +32,10 @@ const ViewReport: React.FC = () => {
   const [reportData, setReportData] = useState<ReportProps | undefined | null>(
     undefined
   );
+
+  // Database
+  const { checkupDb } = useCheckupDb();
+  const { attachmentDb } = useAttachmentDb();
 
   // React Router Navigate
   const navigate = useNavigate();
@@ -66,17 +72,45 @@ const ViewReport: React.FC = () => {
     }
   }, [setQRCode]);
 
+  // fetch picture attachment
+  const fetchAttachments = useCallback(
+    async (pictures: string[]): Promise<string[]> => {
+      const res: string[] = [];
+      for (const pic of pictures) {
+        const imgData = await attachmentDb.getAttachment(pic, pic);
+        const url = URL.createObjectURL(imgData as Blob) as string;
+        res.push(url);
+      }
+
+      return res;
+    },
+    [attachmentDb]
+  );
+
   // fetch report data
   const fetchReportData = useCallback(async () => {
     try {
-      const { data } = await axios.get(`${API_HOST}/checkup/${checkupId}`);
-      buildQRCode();
-      setReportData(data);
+      const res = await checkupDb.get(checkupId as string)
+      const { videos, pictures, dob, _id } = res;
+
+      const pics = await fetchAttachments(pictures);
+      const vids = await fetchAttachments(videos);
+      const newReportData: ReportProps = {
+        ...res,
+        dob: dayjs(dob),
+        id: _id,
+        pictures: pics,
+        videos: vids,
+      };
+
+      setReportData(newReportData);
     } catch (error) {
       console.log(error);
       setReportData(null);
+    } finally {
+      buildQRCode();
     }
-  }, [buildQRCode, checkupId]);
+  }, [buildQRCode, checkupDb, checkupId, fetchAttachments]);
 
   // First render and when checkupId changes
   useEffect(() => {
@@ -84,7 +118,7 @@ const ViewReport: React.FC = () => {
   }, [fetchReportData, checkupId, buildQRCode]);
   return (
     <AppLayout title={`Laporan ${checkupId}`} breadcrumb={breadcrumbItems}>
-      <div className="flex w-full h-full items-start justify-center">
+      <div className="flex items-start justify-center w-full h-full">
         <div id="qr-code" className="flex" hidden={hideQRCode}>
           <QRCode value={`${API_HOST}/report/checkup/${checkupId}`} />
         </div>

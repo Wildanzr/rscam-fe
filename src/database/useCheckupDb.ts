@@ -21,25 +21,25 @@ export const useCheckupDb = () => {
       retry: true,
     })
 
-    canceller.on('change', (info) => {
-      console.log('Change', info)
-    })
+    // canceller.on('change', (info) => {
+    //   console.log('Change', info)
+    // })
 
-    canceller.on('paused', (err) => {
-      console.log('Paused', err)
-    })
+    // canceller.on('paused', (err) => {
+    //   console.log('Paused', err)
+    // })
 
-    canceller.on('active', () => {
-      console.log('Active')
-    })
+    // canceller.on('active', () => {
+    //   console.log('Active')
+    // })
 
-    canceller.on('denied', (err) => {
-      console.log('Denied', err)
-    })
+    // canceller.on('denied', (err) => {
+    //   console.log('Denied', err)
+    // })
 
-    canceller.on('complete', (info) => {
-      console.log('Complete', info)
-    })
+    // canceller.on('complete', (info) => {
+    //   console.log('Complete', info)
+    // })
 
     return () => canceller.cancel()
   }, [checkupDb, checkupRemote])

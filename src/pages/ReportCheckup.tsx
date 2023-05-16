@@ -1,20 +1,20 @@
 import type { ReportProps } from "../@types";
 import React, { useState, useEffect, useCallback } from "react";
-import { useCheckupDb } from "../database/useCheckupDb";
-import { useAttachmentDb } from "../database/useAttachmentDb";
 
 import { PreviewImage, PreviewVideo } from "../components/modals";
 import { Descriptions, Divider, Spin } from "antd";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import axios from "axios";
 import { NotFound } from ".";
 
 const { Item } = Descriptions;
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 const ReportCheckup: React.FC = () => {
   // Path location using route
   const checkupId = useParams<{ checkupId: string }>().checkupId;
-  console.log(checkupId)
+  console.log(checkupId);
 
   // Local states
   const [reportData, setReportData] = useState<ReportProps | undefined | null>(
@@ -27,48 +27,27 @@ const ReportCheckup: React.FC = () => {
   const [previewVideoOpen, setPreviewVideoOpen] = useState<boolean>(false);
   const [previewVideoTitle, setPreviewVideoTitle] = useState<string>("");
 
-  // Database
-  const { checkupDb } = useCheckupDb()
-  const { attachmentDb } = useAttachmentDb()
-
-  // fetch picture attachment
-  const fetchPictures = useCallback(async (pictures: string[]): Promise<string []> => {
-    const res: string[] = []
-    for (const pic of pictures) {
-      const imgData = await attachmentDb.getAttachment(pic, pic)
-      const url = URL.createObjectURL(imgData as Blob) as string
-      res.push(url)
-    }
-
-    return res
-  }, [attachmentDb])
-
   // fetch report data
   const fetchReportData = useCallback(async () => {
     try {
-      const res = await checkupDb.get(checkupId as string)
-      const { videos, pictures, _id, dob } = res
-
-      const pics = await fetchPictures(pictures)
-      const vids = await fetchPictures(videos)
+      const { data } = await axios.get(`${API_HOST}/checkup/${checkupId}`)
       
-      const newReportData: ReportProps = {
-        ...res,
-        dob: dayjs(dob).format("DD MMMM YYYY"),
-        id: _id,
+      // Destructure attachments
+      const { pictures, videos } = data;
+      const pics = pictures.map((pic: string) => `${API_HOST}/checkup/file/${pic}`);
+      const vids = videos.map((vid: string) => `${API_HOST}/checkup/file/${vid}`);
+
+      const reports = {
+        ...data,
         pictures: pics,
-        videos: vids
+        videos: vids,
       }
-
-      setReportData(newReportData)
-
-
-
+      setReportData(reports);
     } catch (error) {
       console.log(error);
       setReportData(null);
     }
-  }, [checkupDb, checkupId, fetchPictures]);
+  }, [checkupId]);
 
   // Handle preview image
   const handlePreviewImage = (path: string) => {

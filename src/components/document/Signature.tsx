@@ -13,7 +13,7 @@ interface ISignature {
   id: string;
 }
 
-const Signature: React.FC<ISignature> = ({ qrCode, id }: ISignature) => {
+const Signature: React.FC<ISignature> = ({ qrCode }: ISignature) => {
   // Register font
   Font.register({
     family: "opensans",
@@ -111,19 +111,19 @@ const Signature: React.FC<ISignature> = ({ qrCode, id }: ISignature) => {
 
         <View style={styles.qr}>
           <Text style={styles.notes_title}>Scan disini:</Text>
-          <Image style={styles.image} src={qrCode} />
+          <Image style={styles.image} src={qrCode as string} />
         </View>
 
         <View style={styles.identity}>
           <View style={styles.identity_header}>
             <Text style={styles.identity_text}>
-              Malang, {dayjs(id).format("DD MMMM YYYY")}
+              Malang, {dayjs().format("DD MMMM YYYY")}
             </Text>
             <Text style={styles.identity_text}>Pemeriksa</Text>
           </View>
           <Text style={styles.identity_text}>
             <Text style={styles.identity_text}>
-              dr. Gunazar Gesang, Sp.PK., M.Kes
+              dr. Gunazar, Sp.PK., M.Kes
             </Text>
           </Text>
         </View>
