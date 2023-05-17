@@ -8,6 +8,7 @@ import { useAttachmentDb } from "../database/useAttachmentDb";
 
 import { AppLayout } from "../layouts";
 import { ReviewCheckUp } from "../views";
+import { VisitPrecache } from ".";
 import { PatientForm, CheckUpForm } from "../components/forms";
 import { Button, message, Steps } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -228,11 +229,30 @@ const GenerateReport: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [checkUpData.advice, checkUpData.conclusion, checkUpData.pictures, checkUpData.result, checkUpData.videos, checkupDb, handlePicsAttachment, handleVidsAttachment, nanoid, navigate, patientData.address, patientData.complaint, patientData.dob, patientData.gender, patientData.name, setCheckUpData, setPatientData]);
+  }, [
+    checkUpData.advice,
+    checkUpData.conclusion,
+    checkUpData.pictures,
+    checkUpData.result,
+    checkUpData.videos,
+    checkupDb,
+    handlePicsAttachment,
+    handleVidsAttachment,
+    nanoid,
+    navigate,
+    patientData.address,
+    patientData.complaint,
+    patientData.dob,
+    patientData.gender,
+    patientData.name,
+    setCheckUpData,
+    setPatientData,
+  ]);
 
   return (
     <AppLayout title="Pemeriksaan" breadcrumb={breadcrumbItems}>
       <div className="flex flex-col justify-between w-full h-full space-y-3">
+        <VisitPrecache />
         {/* Step title */}
         <div className="flex items-center justify-center w-full">
           <Steps current={current} items={stepItems} />

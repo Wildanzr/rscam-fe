@@ -1,9 +1,7 @@
 import React from "react";
 
 import { Description } from ".";
-import { View, Font, StyleSheet } from "@react-pdf/renderer";
-import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
-import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
+import { View, StyleSheet } from "@react-pdf/renderer";
 
 interface IPersona {
   name: string;
@@ -24,21 +22,6 @@ const Persona: React.FC<IPersona> = ({
   date,
   time,
 }: IPersona) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     persona_container: {
       flexDirection: "row",

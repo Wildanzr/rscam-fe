@@ -87,9 +87,26 @@ const stylesRoute = new Route(({ request }) => {
   ]
 }));
 
+// Handle fonts:
+const fontsRoute = new Route(({ request }) => {
+  return request.destination === 'font';
+}, new CacheFirst({
+  cacheName: 'fonts',
+  plugins: [
+    new ExpirationPlugin({
+      maxEntries: 60
+    }),
+    new CacheableResponsePlugin({
+      statuses: [0, 200]
+    })
+  ]
+}));
+
+
 
 // Register routes
 registerRoute(imageRoute);
 registerRoute(videoRoute);
 registerRoute(scriptsRoute);
 registerRoute(stylesRoute);
+registerRoute(fontsRoute);

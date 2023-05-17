@@ -1,9 +1,7 @@
 import React from "react";
 
 import { Result } from ".";
-import { View, StyleSheet, Font } from "@react-pdf/renderer";
-import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
-import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
+import { View, StyleSheet } from "@react-pdf/renderer";
 
 interface ICheckup {
   complaint: string;
@@ -13,21 +11,6 @@ interface ICheckup {
 }
 
 const Checkup: React.FC<ICheckup> = ({ complaint, result, conclusion, advice}: ICheckup) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     checkup_container: {
       width: "50%",

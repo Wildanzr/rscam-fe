@@ -11,7 +11,6 @@ import {
   PDFViewer,
   StyleSheet,
 } from "@react-pdf/renderer";
-import Chanel from "./assets/chanel.png";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 
@@ -113,7 +112,6 @@ const PDF: React.FC<ReportProps> = ({
           <Page size="A4" style={styles.page}>
             <View style={styles.header}>
               <Header
-                logo={Chanel}
                 title="RS Bunga Mawar"
                 address="Jl. Mawar Asri No.47, Malang, Jawa Timur"
                 phone="0341-XXXXXXXX"

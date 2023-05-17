@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "OpenSans_Regular";
+  src: local("OpenSans_Regular"),
+    url("./assets/OpenSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "OpenSans_SemiBold";
+  src: local("OpenSans_SemiBold"),
+    url("./assets/OpenSans-SemiBold.ttf") format("truetype");
+  font-weight: semi-bold;
+}
+
+.font-face-regular {
+  font-family: "OpenSans_Regular";
+}
+
+.font-face-semibold {
+  font-family: "OpenSans_SemiBold";
+}

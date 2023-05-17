@@ -1,7 +1,5 @@
 import React from "react";
-import { Text, Image, View, Font, StyleSheet } from "@react-pdf/renderer";
-import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
-import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
+import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
 interface IHeader {
   title: string;
@@ -9,7 +7,6 @@ interface IHeader {
   phone: string;
   cp: string;
   email: string;
-  logo: string;
 }
 
 const Header: React.FC<IHeader> = ({
@@ -18,23 +15,7 @@ const Header: React.FC<IHeader> = ({
   phone,
   cp,
   email,
-  logo,
 }: IHeader) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     h_page: {
       flexDirection: "row",
@@ -55,21 +36,17 @@ const Header: React.FC<IHeader> = ({
       justifyContent: "center",
     },
     h_rs: {
-      fontFamily: "opensans",
       fontSize: 18,
       fontWeight: 600,
+      paddingBottom: 2,
     },
     h_detail: {
-      fontFamily: "opensans",
       fontSize: 9,
       fontWeight: 400,
     },
   });
   return (
     <View style={styles.h_page}>
-      <View style={styles.h_img_container}>
-        <Image src={logo} />
-      </View>
       <View style={styles.header}>
         <Text style={styles.h_rs}>{title}</Text>
         <Text style={styles.h_detail}>{address}</Text>

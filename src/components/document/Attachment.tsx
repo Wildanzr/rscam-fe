@@ -1,8 +1,6 @@
 import React from "react";
 
-import { View, Text, Image, StyleSheet, Font } from "@react-pdf/renderer";
-import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
-import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
+import { View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 
 interface IAttachment {
   pictures: string[];
@@ -15,21 +13,6 @@ interface IImageDisplay {
 }
 
 const Attachment: React.FC<IAttachment> = ({ pictures }: IAttachment) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     result_container: {
       width: "50%",
@@ -54,7 +37,6 @@ const Attachment: React.FC<IAttachment> = ({ pictures }: IAttachment) => {
       color: "white",
       width: "100%",
       textAlign: "center",
-      fontFamily: "opensans",
       fontSize: 12,
       fontWeight: 600,
     },
@@ -129,21 +111,6 @@ const ImageDisplay: React.FC<IImageDisplay> = ({
   pictures,
   size,
 }: IImageDisplay) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     result_container: {
       width: "100%",

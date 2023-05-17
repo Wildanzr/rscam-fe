@@ -1,8 +1,6 @@
 import React from "react";
 
-import { View, Image, Text, StyleSheet, Font } from "@react-pdf/renderer";
-import OpenSans_Regular from "./assets/OpenSans-Regular.ttf";
-import OpenSans_SemiBold from "./assets/OpenSans-SemiBold.ttf";
+import { View, Image, Text, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 
@@ -14,21 +12,6 @@ interface ISignature {
 }
 
 const Signature: React.FC<ISignature> = ({ qrCode }: ISignature) => {
-  // Register font
-  Font.register({
-    family: "opensans",
-    fonts: [
-      {
-        src: OpenSans_Regular,
-        fontWeight: 400,
-      },
-      {
-        src: OpenSans_SemiBold,
-        fontWeight: 600,
-      },
-    ],
-  });
-
   const styles = StyleSheet.create({
     signature_container: {
       width: "100%",
@@ -41,14 +24,14 @@ const Signature: React.FC<ISignature> = ({ qrCode }: ISignature) => {
       margin: "5 0 0 0",
     },
     notes: {
-      width: "45%",
+      width: "42%",
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-start",
       justifyContent: "flex-start",
     },
     identity: {
-      width: "40%",
+      width: "43%",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -73,7 +56,6 @@ const Signature: React.FC<ISignature> = ({ qrCode }: ISignature) => {
       justifyContent: "center",
     },
     notes_title: {
-      fontFamily: "opensans",
       fontSize: 12,
       fontWeight: 600,
       color: "#1677FF",
@@ -81,13 +63,11 @@ const Signature: React.FC<ISignature> = ({ qrCode }: ISignature) => {
     },
     notes_text: {
       width: "95%",
-      fontFamily: "opensans",
       fontSize: 8,
       fontWeight: 400,
       color: "#000000",
     },
     identity_text: {
-      fontFamily: "opensans",
       fontSize: 11,
       fontWeight: 400,
       color: "#000000",
