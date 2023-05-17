@@ -259,7 +259,7 @@ const GenerateReport: React.FC = () => {
         </div>
 
         {/* Step content */}
-        <div className="flex w-full h-full px-3 py-3 border-2 border-dashed bg-slate-100 rounded-2xl">
+        <div className="flex w-full h-full px-3 py-3 border-[1px] border-dashed bg-slate-100 rounded-2xl">
           {steps[current].content}
         </div>
 

@@ -13,7 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toPng } from "html-to-image";
 import dayjs from "dayjs";
 
-const API_HOST = import.meta.env.VITE_API_HOST as string;
+const APP_HOST = import.meta.env.VITE_APP_HOST as string;
 
 interface IGlobalContext {
   qrCode: string | undefined | null;
@@ -120,7 +120,7 @@ const ViewReport: React.FC = () => {
     <AppLayout title={`Laporan ${checkupId}`} breadcrumb={breadcrumbItems}>
       <div className="flex items-start justify-center w-full h-full">
         <div id="qr-code" className="flex" hidden={hideQRCode}>
-          <QRCode value={`${API_HOST}/report/checkup/${checkupId}`} />
+          <QRCode value={`${APP_HOST}/report/checkup/${checkupId}`} />
         </div>
 
         {reportData && qrCode ? (
