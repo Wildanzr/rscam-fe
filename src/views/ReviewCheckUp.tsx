@@ -74,7 +74,7 @@ const ReviewCheckUp: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-2 w-full h-full">
+    <div className="flex flex-col w-full h-full space-y-2">
       <Divider orientation="left">Data Pasien</Divider>
       <Descriptions layout="vertical" className="w-full h-full">
         <Item label="Nama Pasien">{patientData.name}</Item>
@@ -101,7 +101,7 @@ const ReviewCheckUp: React.FC = () => {
 
       <Descriptions layout="vertical">
         <Item label="Foto">
-          <div className="flex flex-row flex-wrap gap-2">
+          <div className="flex flex-row flex-wrap">
             {checkUpData.pictures?.length !== 0 &&
               checkUpData.pictures !== undefined &&
               checkUpData.pictures.map((image, index) => (
@@ -109,21 +109,21 @@ const ReviewCheckUp: React.FC = () => {
                   key={index}
                   src={image.url}
                   alt={image.name}
-                  className="w-32 h-32 object-cover cursor-pointer"
+                  className="object-cover w-32 h-32 m-4 cursor-pointer"
                   onClick={() => handlePreviewImage(image)}
                 />
               ))}
           </div>
         </Item>
         <Item label="Video">
-          <div className="flex flex-row flex-wrap gap-2">
+          <div className="flex flex-row flex-wrap">
             {checkUpData.videos?.length !== 0 &&
               checkUpData.videos !== undefined &&
               checkUpData.videos.map((video, index) => (
                 <video
                   key={index}
                   src={video.url}
-                  className="w-32 h-32 object-cover cursor-pointer"
+                  className="object-cover w-32 h-32 m-4 cursor-pointer"
                   onClick={() => handlePreviewVideo(video)}
                 />
               ))}

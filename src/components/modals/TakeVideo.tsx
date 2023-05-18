@@ -170,13 +170,11 @@ const TakeVideo: React.FC = () => {
         onCancel={closeModal}
         footer={null}
       >
-        <div className="flex flex-col space-y-4 w-full h-full items-center justify-center">
-          <div className="flex flex-col space-y-2 w-full">
+        <div className="flex flex-col items-center justify-center w-full h-full space-y-4">
+          <div className="flex flex-col w-full space-y-2">
             {videoVisible && (
               <>
                 <Webcam
-                  height={videoConstraints.height}
-                  width={videoConstraints.width}
                   audio={true}
                   mirrored={false}
                   videoConstraints={videoConstraints}
@@ -207,7 +205,7 @@ const TakeVideo: React.FC = () => {
             )}
 
             {/* Show recorded video */}
-            {recordedChunks.length > 0 && (
+            {recordedChunks.length > 0 && !videoVisible && (
               <video
                 controls
                 autoPlay
@@ -226,7 +224,7 @@ const TakeVideo: React.FC = () => {
             )}
           </div>
 
-          <div className="flex flex-row w-full space-x-3 items-center justify-center">
+          <div className="flex flex-row items-center justify-center w-full space-x-3">
             <Button
               type="primary"
               danger={captureState === "recording"}

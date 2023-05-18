@@ -124,7 +124,7 @@ const ReportCheckup: React.FC = () => {
 
           <Descriptions layout="vertical">
             <Item label="Foto">
-              <div className="flex flex-row flex-wrap gap-2">
+              <div className="flex flex-row flex-wrap">
                 {reportData.pictures?.length !== 0 &&
                   reportData.pictures !== undefined &&
                   reportData.pictures.map((image, index) => (
@@ -132,21 +132,21 @@ const ReportCheckup: React.FC = () => {
                       key={index}
                       src={image}
                       alt={image}
-                      className="object-cover w-32 h-32 cursor-pointer"
+                      className="object-cover w-32 h-32 m-4 cursor-pointer"
                       onClick={() => handlePreviewImage(image)}
                     />
                   ))}
               </div>
             </Item>
             <Item label="Video">
-              <div className="flex flex-row flex-wrap gap-2">
+              <div className="flex flex-row flex-wrap">
                 {reportData.videos?.length !== 0 &&
                   reportData.videos !== undefined &&
                   reportData.videos.map((video, index) => (
                     <video
                       key={index}
                       src={video}
-                      className="object-cover w-32 h-32 cursor-pointer"
+                      className="object-cover w-32 h-32 m-4 cursor-pointer"
                       onClick={() => handlePreviewVideo(video)}
                     />
                   ))}

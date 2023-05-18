@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Modal } from "antd";
+import ReactPlayer from "react-player"
 
 interface IPreviewVideo {
   previewOpen: boolean;
@@ -29,12 +30,19 @@ const PreviewVideo = ({
         footer={footer}
         width={width}
       >
-        <video
+        <ReactPlayer 
+          url={previewVideo}
+          controls
+          id="video-preview"
+          width="100%"
+          height="100%"
+        />
+        {/* <video
           src={previewVideo}
           controls
           className="w-full"
           id="video-preview"
-        />
+        /> */}
       </Modal>
     </>
   );
